@@ -1,0 +1,33 @@
+{
+  "name": "jsrdbg",
+  "version": "0.0.0",
+  "description": "JSRDBG Example.",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/swojtasiak/jsrdbg"
+  },
+  "keywords": [
+    "Debugger",
+    "SpiderMonkey"
+  ],
+  "author": "Sławomir Wojtasiak",
+  "license": "LGPL2.1",
+  "bugs": {
+    "url": "https://github.com/swojtasiak/jsrdbg/issues"
+  },
+  "homepage": "https://github.com/swojtasiak/jsrdbg",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-jshint": "^0.11.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-newer": "^1.1.0",
+    "jshint-stylish": "^1.0.0",
+    "load-grunt-tasks": "^3.1.0",
+    "time-grunt": "^1.0.0"
+  }
+}

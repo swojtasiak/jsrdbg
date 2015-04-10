@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+libdir=@libdir@
+
+Name: jsrdbg
+Description: A remote debugger for SpiderMonkey.
+URL: https://github.com/swojtasiak/jsrdbg.git
+Version: @PACKAGE_VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -ljsrdbg
+Libs.private: @MOZJS_LDFLAGS@ @MOZJS_LIBS@

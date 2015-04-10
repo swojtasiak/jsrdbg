@@ -1,0 +1,90 @@
+# Created by https://www.gitignore.io
+
+### Autotools ###
+# http://www.gnu.org/software/automake
+
+Makefile.in
+
+# http://www.gnu.org/software/autoconf
+
+/autom4te.cache
+/aclocal.m4
+/compile
+/configure
+/depcomp
+/install-sh
+/missing
+/stamp-h1
+/config.h
+/config.log
+/config.status
+/config.sub
+/config.guess
+/configure
+/configure.scan
+/depcomp
+/install-sh
+/libtool
+/ltmain.sh
+/Makefile
+/Makefile.in
+/missing
+/stamp-h1
+/ylwrap
+*.exe
+
+*.o
+*.lo
+*.la
+Makefile
+Makefile.in
+.libs
+.deps
+*.pc
+
+# Created by https://www.gitignore.io
+
+### Eclipse ###
+*.pydevproject
+.metadata
+.gradle
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+/Debug
+/Release
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# TeXlipse plugin
+.texlipse
+
+.project
+
+m4/libtool.m4
+m4/lt*.m4
+
+node_modules
+
+test-suite.log
+
+jsrdbg_example*

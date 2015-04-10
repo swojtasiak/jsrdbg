@@ -1,0 +1,8 @@
+{
+  "moz": true,
+  "undef": true,
+  "multistr": true,
+  "unused": false,
+  "predef": [ "env", "require", "module" ]
+}
+

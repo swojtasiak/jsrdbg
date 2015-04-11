@@ -83,12 +83,19 @@ local.properties
 m4/libtool.m4
 m4/lt*.m4
 
+# Needed by nodejs to run Grunt and jshints.
 node_modules
 
 /jrdb/jrdb
 core.*
 
+# Distribution archives.
 *.tar.gz
-jrdb/run.sh
+
+# Tests.
 check/jsrdbg_check*
 test-suite.log
+
+# Executable stack fix.
+fix/fixnostack
+

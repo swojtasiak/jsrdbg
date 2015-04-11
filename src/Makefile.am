@@ -25,7 +25,7 @@ libjsrdbg_la_SOURCES = jsrdbg.cpp \
 	message_builder.cpp \
 	common.cpp
 	
-libjsrdbg_la_CPPFLAGS = -I$(top_srcdir)/utils -I$(top_srcdir)/public $(MOZJS_CFLAGS) -Wno-invalid-offsetof
+libjsrdbg_la_CPPFLAGS = -I$(top_srcdir)/utils -I$(top_srcdir)/public $(MOZJS_CFLAGS) -Wno-invalid-offsetof -z noexecstack
 libjsrdbg_la_LDFLAGS = -no-undefined $(MOZJS_LIBS)
 libjsrdbg_la_LIBADD = $(top_srcdir)/utils/libutils.la js/libdbgres.la 
 

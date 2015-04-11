@@ -1,2 +1,9 @@
-0.0.1
+0.0.1 (10.04.2015)
  * (slawomir@wojtasiak.com) First version.
+
+0.0.2 (11.04.2015)
+ * (slawomir@wojtasiak.com) Executable stack bit removed.
+ * (slawomir@wojtasiak.com) Fix for broken ld which doesn't generate proper .note.GNU-stack sections.
+ * (slawomir@wojtasiak.com) Broken debug build fixed.
+ * (slawomir@wojtasiak.com) State handling code cleaned up a bit.
+ 

@@ -94,11 +94,13 @@ int FSEventLoop::loop() {
             }
         }
 
-        if( ( rc = select( fdmax + 1, &read_fds, &write_fds, NULL, NULL ) ) == -1 ) {
-            cout << "Select failed " << errno << " " << strerror( errno ) << endl;
-            error = JDB_ERROR_SELECT_FAILED;
-            break;
-        }
+        do {
+            if( ( rc = select( fdmax + 1, &read_fds, &write_fds, NULL, NULL ) ) == -1 ) {
+            	cout << "Select failed " << errno << " " << strerror( errno ) << endl;
+                error = JDB_ERROR_SELECT_FAILED;
+                break;
+            }
+        } while( rc == -1 && errno == EINTR );
 
         for( int i = 0; i <= fdmax; i++) {
 

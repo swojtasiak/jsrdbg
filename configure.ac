@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([jsrdbg], [0.0.1], [slawomir@wojtasiak.com])
+AC_INIT([jsrdbg], [0.0.2], [slawomir@wojtasiak.com])
 m4_include([m4/ax_pthread.m4])
 m4_include([m4/ax_lib_readline.m4])
 AM_INIT_AUTOMAKE
@@ -25,7 +25,7 @@ AM_CONDITIONAL(HAVE_OBJCOPY, [test x"$OBJCOPY" != x])
 AC_ARG_ENABLE([debug],
 	[AS_HELP_STRING([--enable-debug],
 	[enable debugging messages [EXPERT] @<:@default=no@:>@])],
-	[debug="$withval"], [debug=no])
+	[debug="$enableval"], [debug=no])
 
 AS_IF([test "x$debug" = xyes],
 	[AC_DEFINE([JSRDBG_DEBUG], [1], [Define to enable debug messages from debugging engine [EXPERT].])])
@@ -85,6 +85,7 @@ AS_IF([test "x$int_headers" != "xyes"],[AC_MSG_ERROR([Unable to find the standar
 AC_CHECK_HEADERS([termios.h])
 
 AC_CONFIG_FILES([
+fix/Makefile
 Makefile
 public/Makefile
 utils/Makefile

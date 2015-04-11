@@ -12,5 +12,5 @@ libutils_la_SOURCES = threads.cpp \
 	js_utils.cpp \
 	utils.hpp
 
-libutils_la_CPPFLAGS = $(MOZJS_CFLAGS) -Wno-invalid-offsetof
+libutils_la_CPPFLAGS = $(MOZJS_CFLAGS) -Wno-invalid-offsetof -z noexecstack
 libutils_la_LDFLAGS = -no-undefined $(MOZJS_LIBS)

@@ -55,6 +55,7 @@
     const ERROR_CODE_UNEXPECTED_EXC        = 10;
     const ERROR_CODE_EVALUATION_FAILED     = 11;
     const ERROR_CODE_PC_NOT_AVAILABLE      = 12;
+    const ERROR_CODE_NO_ACTIVE_FRAME       = 13;
 
     // Following constans describes values that can be returned
     // be handleCommand function to the core engine. They are used
@@ -158,8 +159,8 @@
     /**
      * Logs some information about location in the frame.
      */
-    Utils.logLocation = function( frame ) {
-        env.print( 'Location:');
+    Utils.logLocation = function( frame, where ) {
+        env.print( 'Location: ' + ( where ? where : '' ) );
         env.print( ' > offset: ' + frame.offset );
         env.print( ' > offset-line: ' + frame.script.getOffsetLine( frame.offset ) );
         env.print( ' > displacement: ' + env.options.sourceDisplacement );
@@ -186,10 +187,21 @@
     };
     
     /**
+     * Logs exception if debugging is enabled.
+     */
+    Utils.logException = function( ex ) {
+        if( env.isLoggerEnabled() ) {
+            env.print( "Exception: " + ex + "\nType: " + typeof(ex) + "\nStack: " + ex.stack );
+            env.print( "Exception has been logged here: " + new Error().stack );
+        }
+    };
+    
+    /**
      * Handles exceptions thrown in JS Debugger callbacks like
      * breakpoints or on step handlers.
      */
     Utils.handleCallbackException = function( ex ) {
+        env.log( 'Unhandled exceptions handler.' );
         if( ex instanceof DebuggerInterrupted ) {
            // Debugger has been interrupted, so clean
            // everything up just now, in order to
@@ -197,10 +209,7 @@
            // during the shutdown procedure.
            dbg.shutdown();
         }
-        if( env.isLoggerEnabled() ) {
-            env.print("Callback exception: " + ex + " Type: " + typeof(ex) );
-            env.print( new Error().stack );
-        }
+        Utils.logException( ex );
     };
 
     /*********************************************
@@ -422,14 +431,6 @@
         },
        
         /**
-         * Unregisters state handler on the debugger level.
-         */
-        clean: function( mediator, state ) {
-            env.print('Cleans all handlers.');
-            mediator.cleanAllHandlers( state.frame );
-        },
-       
-        /**
          * Provides a local state for the handlers.
          */
         _prepareHandler: function( mediator, type, frame, globalState, handler ) {
@@ -445,42 +446,26 @@
         },
         
         /**
-         * Stores new location inside a given state.
-         */
-        _updateLocation: function( state, frame ) {
-            state.frame = frame;
-            state.location = new Location( frame );
-        },
-        
-        /**
-         * Removes handler from a frame.
-         */
-        _removeFrameHandlers: function( frame ) {
-            if( frame.live ) {
-                frame.onStep = undefined;
-                frame.onPop = undefined;
-            }
-        },
-        
-        /**
          * Prepares a positioned state for given frame.
          */
         _prepareState: function( frame, state ) {
             if( state === undefined ) {
                 state = {};
             }
-            this._updateLocation( state, frame );
+            state.frame = frame;
+            state.location = new Location( frame );
             return state;
         },
         
         // ** Default handlers **
         
-        // onStep frame handler.
+        /**
+         * onStep frame handler.
+         */
         _onStep_Handler: function( mediator, frame, state ) {
 
             if( env.isLoggerEnabled() ) {
-                env.log( 'onStep.' );
-                Utils.logLocation( frame );
+                Utils.logLocation( frame, 'onStep' );
             }
 
             // Check if there is any source code associated with this instruction.
@@ -519,33 +504,22 @@
 
         },
         
-        // onPop frame handler.
+        /**
+         * onPop frame handler.
+         */
         _onPop_Handler: function( mediator, frame, state ) {
         
             if( env.isLoggerEnabled() ) {
-                env.log( 'onPop.' );
-                Utils.logLocation( frame );
+                Utils.logLocation( frame, 'onPop' );
             }
         
-            this._removeFrameHandlers( frame );
-            this._updateLocation( state, frame );
-            
             try {
-                mediator.pause( frame );
+                mediator.pause( frame, frame.older );
             } catch( ex ) {
                 Utils.handleCallbackException( ex );
                 return;
             }
             
-            var pFrame = frame.older;
-            if( pFrame ) {
-                let handlers = this.createStateHandlers( pFrame, mediator, state );
-                mediator.registerDebuggerHandlers( pFrame, handlers );
-                state.location = new Location(pFrame);
-            }
-            
-            state.frame = pFrame;
-
         }
     };
     
@@ -593,29 +567,12 @@
         // onEnterFrame debugger handler.
         _onEnterFrame_Handler: function( mediator, frame, state, newFrame ) {
             
-            // Notice that 'frame' point to the same frame
-            // for which '_stateHandlers' method was executed.
+            // Notice that 'frame' points to the same frame for which '_stateHandlers' method was executed.
             if( env.isLoggerEnabled() ) {
-                env.log( 'onEnterFrame.' );
-                Utils.logLocation( newFrame );
+                Utils.logLocation( newFrame, 'onEnterFrame' );
             }
             
-            // There is a frame wih registered handlers. We have to
-            // remove them in order to avoid any unwanted events
-            // from frames being lower on the stack.
-            if( frame ) {
-                // From this point we can just forgot about this frame, because
-                // we can access it again in the onPop handler of higher level stack.
-                this._removeFrameHandlers( frame );
-            }
-            
-            // Sets handlers for new frame.
-            mediator.registerDebuggerHandlers( newFrame, this.createStateHandlers( newFrame, mediator, state ) );
-            
-            // There is nothing to do, everything is clear, we are in a new frame,
-            // so store it's location update PC and wait for the next command.
-            this._updateLocation( state, newFrame );
-            
+            // Pause cleans current frame, so we have nothing to do here.
             try {
                 mediator.pause( newFrame );
             } catch( ex ) {
@@ -657,7 +614,8 @@
         this._storage = {
             activeStateHandler: null,
             breakpoints: {},
-            breakpointCounter: 0
+            breakpointCounter: 0,
+            older: null
         };
     }
     
@@ -714,7 +672,7 @@
              */
             this._dbg.uncaughtExceptionHook = (function(exc) {
                 
-                var value = "Uncaught exception: " + exc.message ? exc.message : ( exc ? exc.toString() : 'No error message.' );
+                var value = "Uncaught exception: " + exc.message ? exc.message : ( exc ? exc.toString() : 'No error message. Stack: ' + exc.stack  );
                 
                 env.log(value);
                 
@@ -725,6 +683,7 @@
                     // Ignore this message. It has already been logged by the
                     // core engine and it shouldn't have any impact on the
                     // debugger itself.
+                    Utils.logException( ex );
                 }
 
             }).bind(this);
@@ -737,7 +696,7 @@
                     this._dbg.onEnterFrame = undefined;
                     // Pause debuggee on the 'debugger' statement.
                     try {
-                        this.pause( frame, true );
+                        this.pause( frame, null, true );
                     } catch( ex ) {
                         Utils.handleCallbackException( ex );
                     }                    
@@ -759,6 +718,7 @@
                             env.sendCommand( BROADCAST, ProtocolStrategy.command_BREAKPOINT_SET( breakpoint ) );
                         } catch( exc ) {
                             // Async, error doesn't matter.
+                            Utils.logException( exc );
                         }
                     } catch( exc ) {
                         try {
@@ -766,6 +726,7 @@
                                 breakpoint.id, null, ERROR_CODE_CANNOT_SET_BREAKPOINT, { bid: breakpoint.id } ) );
                         } catch( ex ) {
                             // Async, error doesn't matter.
+                            Utils.logException( ex );
                         }
                     }
                 }
@@ -905,34 +866,26 @@
          */
         registerStateHandler: function( stateHandler ) {
         
-            var pc = this.getPC();
+            // If we are paused in a frame which has been already poped
+            // out the older frame on the stack has higher precedence.
+            var frame = this._storage.older;
+        
+            if( !frame ) {
+                frame = this.getPC().getFrame();
+            }
             
-            this.cleanAllHandlers( pc.getFrame() );
-            
-            var handlers = stateHandler.createStateHandlers( pc.getFrame(), this );
+            var handlers = stateHandler.createStateHandlers( frame, this );
             
             // Store some information about current state handlers. It 
             // can be used to remove state handler being in use when
             // it is broken by 'debugger;' statement or breakpoint.
             this._storage.activeStateHandler = {
-                sh: stateHandler, 
                 handlers: handlers 
             };
             
-            this.registerDebuggerHandlers( pc.getFrame(), handlers );
+            this.registerDebuggerHandlers( frame, handlers );
         },
         
-        /**
-         * Deletes all handlers used dby given frame and debugger.
-         */
-        cleanAllHandlers: function( frame ) {
-            if( frame.live ) {
-                frame.onStep = undefined;
-                frame.onPop = undefined;
-            }
-            this._dbg.onEnterFrame = undefined;
-        },
-
         /**
          * Prepares information about stacktrace.
          */
@@ -1063,15 +1016,42 @@
          * of the debugger mediator instance.
          */
         registerDebuggerHandlers: function( frame, handlers ) {
-            for( let handlerName in handlers ) {
+            var state = handlers.state;
+            state.cleaners = [];
+            for( let handler in handlers ) {
+                let handlerName = handler;
                 if( handlerName !== 'state' ) {
                     var handlerDesc = handlers[handlerName];
                     switch( handlerDesc.type ) {
                     case HANDLER_TYPE_FRAME:
+                        if( env.isLoggerEnabled() ) {
+                            env.print( 'Registering ' + handlerName + ' state handler for frame.' );
+                        }
                         frame[handlerName] = handlerDesc.handler.bind(this);
+                        /*jshint -W083 */
+                        state.cleaners.push( (function() {
+                            if( env.isLoggerEnabled() ) {
+                                env.print( 'Removing ' + handlerName + ' state handler from frame.' );
+                            }
+                            if( frame.live ) {
+                                frame[handlerName] = undefined;
+                            } else {
+                                env.log( 'Cannot clean death frame. It\'s not an error - do not report it.' );
+                            }
+                        }).bind(this) );
                         break;
                     case HANDLER_TYPE_DBG:
+                        if( env.isLoggerEnabled() ) {
+                            env.print( 'Registering ' + handlerName + ' state handler for debugger.' );
+                        }
                         this._dbg[handlerName] = handlerDesc.handler.bind(this);
+                        /*jshint -W083 */
+                        state.cleaners.push( (function() {
+                            if( env.isLoggerEnabled() ) {
+                                env.print( 'Removing ' + handlerName + ' state handler from debugger.' );
+                            }
+                            this._dbg[handlerName] = undefined;
+                        }).bind(this) );
                         break;
                     }
                 }
@@ -1079,30 +1059,79 @@
         },
         
         /**
+         * Cleans current state by calling all registered state cleaners.
+         */
+        _cleanCurrentState: function() {
+            // Call all registered cleaners.
+            var ash = this._storage.activeStateHandler;
+            if( ash ) {
+                let cleaners = ash.handlers.state.cleaners;
+                if( cleaners ) {
+                    for( let i in cleaners ) {
+                        // Run cleaner.
+                        try {
+                            cleaners[i]();
+                        } catch( exc ) {
+                            Utils.logException( exc );
+                        }
+                    } 
+                }
+                this._storage.activeStateHandler = null;
+            }
+        },
+        
+        /**
          * Pauses the debuggee and waits for incomming commands.
          */
-        pause: function(frame, suspended) {
-            // Remove active state handler before going to sleep.
+        pause: function(frame, older, suspended) {
+
             if( !suspended ) {
                 suspended = false;
             }
-            var ash = this._storage.activeStateHandler;
-            if( ash ) {
-                ash.sh.clean( this, ash.handlers.state );
-                this._storage.activeStateHandler = null;
-            }
-            // Sends information to the clients that might be interested 
-            // about the fact that debugger has been paused.
-            if( frame ) {
-                this._storage.pc = new ProgramCounter( frame );
-            }
+            
+            // Store older frame for future use if there is any.
+            this._storage.older = older;
+            
             try {
-                env.sendCommand( BROADCAST, ProtocolStrategy.command_PAUSED( this._storage.pc ) );
-            } catch( exc ) {
-                // Cannot send the command. This is a broadcast, so this 
-                // error can be silently ignored anyway.
+                
+                this._cleanCurrentState();
+            
+                // There is no frame passed in the arguments, so get the active one.    
+                if( !frame ) {
+                    frame = this._dbg.getNewestFrame();
+                }
+                
+                if( frame ) {
+                
+                    this._storage.pc = new ProgramCounter( frame );
+                
+                    try {
+                        // Sends information to the clients that might be interested 
+                        // about the fact that debugger has been paused.
+                        env.sendCommand( BROADCAST, ProtocolStrategy.command_PAUSED( this._storage.pc ) );
+                    } catch( exc ) {
+                        // Cannot send the command. This is a broadcast, so this 
+                        // error can be silently ignored anyway.
+                        Utils.logException( exc );
+                    }
+                    
+                    this._commandLoop( suspended );
+                    
+                } else {
+                
+                    // Broadcast this information to all clients.
+                    try {
+                        env.sendCommand( BROADCAST, ProtocolStrategy.command_ERROR( 'Cannot pause debuggee, no active frame found.', null, ERROR_CODE_NO_ACTIVE_FRAME ) );
+                    } catch( ex ) {
+                        Utils.logException( ex );
+                    }
+                    
+                }
+                
+            } finally {
+                this._storage.older = null;
             }
-            this._commandLoop( suspended );
+            
         },
         
         /**
@@ -1117,6 +1146,7 @@
                     throw new DebuggerInterrupted();
                 }
             } catch( ex ) {
+                Utils.logException( ex );
                 this._storage.pause = false;
                 throw ex;
             }
@@ -1177,16 +1207,7 @@
             // Remove all breakpoints.
             this.deleteAllBreakpoints();
             // Remove active state handler if there is any.
-            var ash = this._storage.activeStateHandler;
-            if( ash ) {
-                ash.sh.clean( this, ash.handlers.state );
-                this._storage.activeStateHandler = null;
-            }
-            // Clean all handlers, just to be sure.
-            var pc = this.getPC();
-            if( pc ) {
-                this.cleanAllHandlers( pc.getFrame() );
-            }
+            this._cleanCurrentState();
         }
        
     };
@@ -1522,6 +1543,7 @@
             'pause': {
                 needPause: false,
                 fn: function( ctx ) {
+                    env.log( 'Debugger paused.' );
                     if( ctx.debuggerMediator.isPaused() ) {
                         throw new DbgException( "Debuggee is already paused.", ERROR_CODE_IS_PAUSED );
                     }
@@ -1576,7 +1598,7 @@
                             ctx.debuggerMediator.evaluateVariable( ctx.command.path, ctx.command.options ) )
                         );
                     } catch( ex ) {
-                         if( ex instanceof MediatorException ) {
+                        if( ex instanceof MediatorException ) {
                             throw new DbgException( ex.msg, ERROR_CODE_EVALUATION_FAILED );
                         }
                         throw ex;
@@ -1705,18 +1727,6 @@
             ctx.debuggerMediator = this._debuggerMediator;
             ctx.stateHandlerFactory = this._stateHandlerFactory;
             
-            // Sends error message to the client.
-            ctx.sendErrorMessage = function( msg, code ) {
-                try {
-                    env.sendCommand( clientId, ProtocolStrategy.command_ERROR( msg, id, code ) );
-                } catch( exc ) {
-                    // Just ignore.
-                    if( env.isLoggerEnabled() ) {
-                        env.print( "Client not found: " + clientId );
-                    }
-                }
-            };
-            
             // Sends a generic command to the client.
             ctx.sendCommand = function( cmd ) {
                 // Send id back if there is any.
@@ -1732,6 +1742,7 @@
                     // us about any errors that might occur in the future, so it's
                     // just impossible to handle every error here. Potential errors
                     // are logged by the core engine (native code).
+                    Utils.logException( exc );
                 }
             };
             
@@ -1976,10 +1987,12 @@
             
                 result = dbg.handleCommand( clientId, command );
                 if( env.isLoggerEnabled() ) {
-                    env.print('Command result: ' + result);
+                    env.print('Command result (' +  clientId + '/' + command.name + '): ' + result);
                 }
                 
             } catch( e ) {
+            
+                Utils.logException( e );
             
                 // Debugger has been interrupted, so we have to continue the debuggee application and shutdown the debugger.
                 if( e instanceof DebuggerInterrupted ) {
@@ -1994,9 +2007,6 @@
                     msg = e.msg;
                     code = e.code;
                 } else {
-                    if( env.isLoggerEnabled() ) {
-                        env.print('Unhandled exception: ' + e);
-                    }
                     msg = e.message ? e.message : e.toString();
                     code = ERROR_CODE_UNEXPECTED_EXC;
                 }
@@ -2004,6 +2014,7 @@
                 try {
                     env.sendCommand( clientId, ProtocolStrategy.command_ERROR( msg, command.id ? command.id : null, code ) );
                 } catch( exc ) {
+                    Utils.logException( exc );
                 }
                 
                 // We cannot predict how the unexpected exceptions should

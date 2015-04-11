@@ -854,5 +854,4 @@ Standard parameters described above have been omitted intentionally.
     ERROR_CODE_UNEXPECTED_EXC        = 10
     ERROR_CODE_EVALUATION_FAILED     = 11
     ERROR_CODE_PC_NOT_AVAILABLE      = 12
-
-
+    ERROR_CODE_NO_ACTIVE_FRAME       = 13

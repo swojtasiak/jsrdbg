@@ -357,10 +357,12 @@ void TCPProtocol::run() {
            // Prepare read_fds again, because it might has been cleared by the "select".
            read_fds = fds;
 
-           if( ( rc = ::select( fdmax + 1, &read_fds, &write_fds, NULL, NULL ) ) == -1 ) {
-               _log.error( "TCPProtocol::run: select failed with error: %d.", rc );
-               break;
-           }
+           do {
+               if( ( rc = ::select( fdmax + 1, &read_fds, &write_fds, NULL, NULL ) ) == -1 ) {
+                   _log.error( "TCPProtocol::run: select failed with error: %d.", rc );
+                   break;
+               }
+           } while( rc == -1 && errno == EINTR );
 
            for( int i = 0; i <= fdmax; i++) {
 

@@ -6,4 +6,9 @@
  * (slawomir@wojtasiak.com) Fix for broken ld which doesn't generate proper .note.GNU-stack sections.
  * (slawomir@wojtasiak.com) Broken debug build fixed.
  * (slawomir@wojtasiak.com) State handling code cleaned up a bit.
- 
+
+0.0.3 (12.04.2015)
+ * (slawomir@wojtasiak.com) EINTR related fixes (TCP/IP communication)
+ * (slawomir@wojtasiak.com) Broken line numeration in script code viewer (jrdb)
+ * (slawomir@wojtasiak.com) Pause is not needed to delete breakpoints
+

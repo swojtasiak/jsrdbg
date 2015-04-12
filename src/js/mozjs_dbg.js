@@ -1487,7 +1487,7 @@
              * Deletes given breakpoint.
              */
             'delete_breakpoint': {
-                needPause: true,
+                needPause: false,
                 fn: function( ctx ) {
                     var ids = ctx.command.ids;
                     if( typeof(ids) === 'undefined' ) {
@@ -1862,13 +1862,7 @@
                 let dbgScripts = dbg.findScripts(query);
                 
                 if( dbgScripts && dbgScripts.length > 0 ) {
-                    // Find script for level 0.
-                    for( let i in dbgScripts ) {
-                        if( dbgScripts[i].staticLevel === 0 ) {
-                            script = dbgScripts[i];
-                            break;
-                        }
-                    }
+                    script = dbgScripts[0];
                 }
                 
                 if( script && script.source ) {

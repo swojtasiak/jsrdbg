@@ -222,7 +222,7 @@ int TCPClient::recv() {
         }
         int rc = ::recv( _socket, buffer, min, 0 );
         if( rc < 0 ) {
-            if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) ) {
+            if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) || ( errno == EINTR ) ) {
                 // Do nothing, maybe next time something will be read.
                 return JSR_ERROR_NO_ERROR;
             } else {
@@ -283,7 +283,7 @@ int TCPClient::send() {
     while( !_writeBuffer.empty() || handleBuffers() ) {
         rc = ::send( _socket, _writeBuffer.c_str(), _writeBuffer.size(), 0 );
         if( rc < 0 ) {
-            if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) ) {
+            if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) || ( errno == EINTR ) ) {
                 // Do nothing, maybe next time something will be written.
                 return JSR_ERROR_WOULD_BLOCK;
             } else {
@@ -357,12 +357,16 @@ void TCPProtocol::run() {
            // Prepare read_fds again, because it might has been cleared by the "select".
            read_fds = fds;
 
-           do {
-               if( ( rc = ::select( fdmax + 1, &read_fds, &write_fds, NULL, NULL ) ) == -1 ) {
-                   _log.error( "TCPProtocol::run: select failed with error: %d.", rc );
-                   break;
-               }
-           } while( rc == -1 && errno == EINTR );
+	   rc = ::select( fdmax + 1, &read_fds, &write_fds, NULL, NULL );
+
+	   if( rc == -1 ) {
+	       if( errno == EINTR ) {
+		   continue;
+	       } else {
+		   _log.error( "TCPProtocol::run: select failed with error: %d - %s.", errno, strerror( errno ) );
+		   break;
+	       }
+	   }
 
            for( int i = 0; i <= fdmax; i++) {
 

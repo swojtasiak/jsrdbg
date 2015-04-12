@@ -94,13 +94,17 @@ int FSEventLoop::loop() {
             }
         }
 
-        do {
-            if( ( rc = select( fdmax + 1, &read_fds, &write_fds, NULL, NULL ) ) == -1 ) {
-            	cout << "Select failed " << errno << " " << strerror( errno ) << endl;
-                error = JDB_ERROR_SELECT_FAILED;
-                break;
+	rc = select( fdmax + 1, &read_fds, &write_fds, NULL, NULL );
+
+        if( rc == -1 ) {
+            if( errno == EINTR ) {
+        	continue;
+            } else {
+	        cout << "Select failed errno: " << errno << " - " << strerror( errno ) << endl;
+	        error = JDB_ERROR_SELECT_FAILED;
+	        break;
             }
-        } while( rc == -1 && errno == EINTR );
+        }
 
         for( int i = 0; i <= fdmax; i++) {
 
@@ -111,7 +115,7 @@ int FSEventLoop::loop() {
                    if( (*it)->getProducerFD() == i ) {
                        int error = (*it)->write();
                        if( error ) {
-                           log.error("Consumer failed with error: %d", error);
+                           log.error("Producer failed with error: %d", error);
                            (*it)->closeProducer( error );
                            _producers.erase(it);
                            continue;
@@ -128,7 +132,9 @@ int FSEventLoop::loop() {
                    if( (*it)->getConsumerFD() == i ) {
                        int error = (*it)->read();
                        if( error && error != JDB_ERROR_WOULD_BLOCK ) {
-                           log.error("Consumer failed with error: %d", error);
+                	   if( error != JDB_ERROR_FILE_DESCRIPTOR_CLOSED ) {
+                	       log.error("Consumer failed with error: %d", error);
+                	   }
                            (*it)->closeConsumer( error );
                            _consumers.erase(it);
                            continue;
@@ -167,7 +173,7 @@ int BufferedFSEventConsumer::read() {
         }
         int rc = ::read( getConsumerFD(), buffer, min );
         if( rc < 0 ) {
-            if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) ) {
+            if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) || ( errno == EINTR ) ) {
                 // Do nothing, maybe next time something will be read.
                 int error;
                 if( ( error = handleBuffer() ) ) {
@@ -239,7 +245,7 @@ int BufferedFSEventProducer::BufferedFSEventProducer::write() {
         while( i ) {
             int rc = ::write( fd, buffer + sent, i  );
             if( rc < 0 ) {
-                if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) ) {
+                if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) || ( errno == EINTR ) ) {
                     // Do nothing, maybe next time something will be written.
                     error = JDB_ERROR_WOULD_BLOCK;
                     break;

@@ -403,7 +403,13 @@
         
             this.getSourceCode( location.url, function( script, displacement ) {
                 
-                let line = location.line + displacement;
+                /* Show file from the beginning. */
+                let line = 0;
+                
+                if( location.line !== undefined ) {
+                    // Convert to native line number.
+                    line = location.line + displacement;
+                }
                 
                 if( !lines ) {
                     // Show the whole source script.
@@ -995,7 +1001,7 @@
                             }
                         } );
                     } else {
-                        sourceRepository.printSource( { url: command.args[0], line: 0 } );
+                        sourceRepository.printSource( { url: command.args[0] } );
                     }
                 }
             },

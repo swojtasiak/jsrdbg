@@ -172,7 +172,7 @@ all unit tests. Take a look at it in order to get a real example of its usage.
 
 ## Remote client
 
-nside 'jrdb' directory, there is a simple remote debugger client available. It
+Inside 'jrdb' directory, there is a simple remote debugger client available. It
 was designed and implemented having gdb in mind, so it's quite similar to the
 gdb, but only a small subset of all gdb commands is implemented for now. 
 
@@ -370,7 +370,7 @@ jrdb>
 
 So it's an anonymous function with one argument 'msg'.
 
-Hmm, 'print' evaluates code. So lets try to do something strange:
+Hmm, 'print' evaluates code. So let's try to do something strange:
 
 ```
 jrdb> p fn = function() { debugger; };

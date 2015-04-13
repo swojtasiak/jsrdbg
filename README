@@ -346,7 +346,7 @@ jrdb>
 
 So it's an anonymous function with one argument 'msg'.
 
-Hmm, 'print' evaluates code. So lets try to do something strange:
+Hmm, 'print' evaluates code. So let's try to do something strange:
 
 jrdb> p fn = function() { debugger; };
 {

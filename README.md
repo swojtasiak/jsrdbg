@@ -223,6 +223,14 @@ Ok, it means that application has been started in the suspended mode described
 before and is waiting for new connections. It uses the default TCP/IP port, so
 everything that has to be done to connect it is to run jrdb.
 
+First of all type --help parameter in order to get all available arguments:
+
+```sh
+$ jrdb --help
+```
+
+Then start the client:
+
 ```
 $ jrdb
 JavaScript Remote Debugger Client connected to a remote debugger.

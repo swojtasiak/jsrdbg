@@ -162,7 +162,9 @@
     Utils.logLocation = function( frame, where ) {
         env.print( 'Location: ' + ( where ? where : '' ) );
         env.print( ' > offset: ' + frame.offset );
-        env.print( ' > offset-line: ' + frame.script.getOffsetLine( frame.offset ) );
+        let line = frame.script.getOffsetLine( frame.offset );
+        env.print( ' > offset-line: ' + line );
+        env.print( ' > line-offsets: ' + frame.script.getLineOffsets( line ) );
         env.print( ' > displacement: ' + env.options.sourceDisplacement );
         var loc = new Location( frame );
         env.print( ' > line: ' + loc.getScriptLine() );
@@ -963,22 +965,28 @@
             var value = null;
             var pc = this.getPC();
             var frame = pc.getFrame();
-            var env = frame.environment;
-            if( env ) {
+            var environment = frame.environment;
+            if( environment ) {
                 /*jshint -W061*/
                 var lineNumber = pc.getLocation().getScriptLine();
                 var result = frame.eval( path , { lineNumber: lineNumber } );
-                if( result.return ) {
+                if( env.isLoggerEnabled() ) {
+                    env.print( 'Evaluation result: ' + result.return + ' type: ' + typeof( result.return ) );
+                }
+                if( result.return !== undefined ) {
                     let walker = new DebuggerObjectWalker( new DbgObjectTreeBuilder() );
                     value = walker.walkObj( result.return, options );
+                    if( env.isLoggerEnabled() ) {
+                       env.print( 'Converted evaluation result: ' + JSON.stringify( value ) );
+                    }
                 } else if( result.throw ) {
                     if( result.throw instanceof Debugger.Object ) {
                         throw new MediatorException( 'Evaluation exception (' + 
                             result.throw['class'] + '): ' + ( result.throw.message ? 
                             result.throw.message : 'No message.') );
                     }
-                    throw new MediatorException( 'Evaluation failed due to unknown error.' );
-                } 
+                    throw new MediatorException( 'Evaluation failed due to an unknown error.' );
+                }
             } else {
                 throw new MediatorException( 'This stack frame doesn\'t allow evaluation.' );
             }
@@ -1594,9 +1602,8 @@
                         throw new DbgException( "Variable path not found.", ERROR_CODE_BAD_ARGS );
                     }
                     try {
-                        ctx.sendCommand( ProtocolStrategy.command_EVALUATE( 
-                            ctx.debuggerMediator.evaluateVariable( ctx.command.path, ctx.command.options ) )
-                        );
+                        var evalResult = ctx.debuggerMediator.evaluateVariable( ctx.command.path, ctx.command.options );
+                        ctx.sendCommand( ProtocolStrategy.command_EVALUATE ( evalResult ) );
                     } catch( ex ) {
                         if( ex instanceof MediatorException ) {
                             throw new DbgException( ex.msg, ERROR_CODE_EVALUATION_FAILED );
@@ -1843,6 +1850,10 @@
 
         getScriptSourceCode: function( url, line, script ) {
 
+            if( url === 'debugger eval code' ) {
+                return null;
+            }
+
             var source = null;
 
             // Find source object associated with given URL.
@@ -1921,7 +1932,7 @@
             var sources = {};
             if( scripts ) {
                 scripts.forEach( function( script ) {
-                    if( script.url && script.source ) {
+                    if( script.url && script.url !== 'debugger eval code' && script.source ) {
                         sources[script.url] = script.source;
                     }
                 });

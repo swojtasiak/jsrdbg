@@ -270,7 +270,11 @@ const std::string& JSRemoteDebuggerCfg::getTcpHost() const {
 }
 
 void JSRemoteDebuggerCfg::setTcpHost(const char* tcpHost) {
-    _tcpHost = tcpHost;
+    if( tcpHost != NULL ) {
+        _tcpHost = tcpHost;
+    } else {
+	_tcpHost = "";
+    }
 }
 
 int JSRemoteDebuggerCfg::getTcpPort() const {

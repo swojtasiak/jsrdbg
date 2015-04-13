@@ -982,8 +982,10 @@
                         'evaluation-depth': context.getEnv( CV_EVALUATION_DEPTH )
                     };
                     env.sendCommand( protocolStrategy.getEvaluate( commandLine, options ), function( packet ) {
-                        if( packet.result ) {
+                        if( packet.result !== undefined) {
                             Utils.printVariable( packet.result );
+                        } else {
+                            env.println('undefined');
                         }
                     } );
                 }
@@ -1150,50 +1152,60 @@
     return {
 	    handleDbgCommand: function( contextId, command ) {
 	        
-	        command.contextId = contextId;
+	        try {
 	        
-	        if( context.isEnv( CV_DEBUG ) ) {
-                env.println('Received:' + JSON.stringify( command ) + ' from context: ' + contextId );
-            }
-            
-            // Check if there is a method waiting for this response.
-            if( command.id ) {
-                let responseHandler = waitingResponseHandlers[command.id];
-                if( responseHandler ) {
-                    let error = command.type === 'error';
-                    let fn = responseHandler.fn;
-                    let handled = false;
-                    // If there is only one function defined it's destined to handle succesful requests only.
-                    if( !error && fn instanceof Function ) {
-                        fn( command );
-                        handled = true;
-                    } else {
-                        if( error && fn.error ) {
-                            fn.error(command);
+	            command.contextId = contextId;
+	            
+	            if( context.isEnv( CV_DEBUG ) ) {
+                    env.println('Received:' + JSON.stringify( command ) + ' from context: ' + contextId );
+                }
+                
+                // Check if there is a method waiting for this response.
+                if( command.id ) {
+                    let responseHandler = waitingResponseHandlers[command.id];
+                    if( responseHandler ) {
+                        let error = command.type === 'error';
+                        let fn = responseHandler.fn;
+                        let handled = false;
+                        // If there is only one function defined it's destined to handle succesful requests only.
+                        if( !error && fn instanceof Function ) {
+                            fn( command );
                             handled = true;
-                        } else if( !error && fn.ok ) {
-                            fn.ok(command);
-                            handled = true;
+                        } else {
+                            if( error && fn.error ) {
+                                fn.error(command);
+                                handled = true;
+                            } else if( !error && fn.ok ) {
+                                fn.ok(command);
+                                handled = true;
+                            }
                         }
-                    }
-                    delete waitingResponseHandlers[command.id];
-                    if(handled) {
-                        return;
+                        delete waitingResponseHandlers[command.id];
+                        if(handled) {
+                            return;
+                        }
+                    } else if( command.type !== 'error' ) {
+                        env.println( 'Received a late response from the remote debugger, just ignoring: ' 
+                            + ( command.subtype ? command.subtype : 'unknown' ) );
                     }
                 }
-            }
+                
+                if( command.type ) {
+	                var subtype = null;
+	                if( command.subtype ) {
+	                    subtype = command.subtype;
+	                }
+                    var handler = debuggerEventHandlerFactory.create(command.type, subtype);
+                    if( typeof( handler ) === 'function' ) {
+                        handler( command );
+                    } else {
+                        env.println( "Unknown command: " + JSON.stringify( command ) );
+                    }
+                }
+                
             
-	        if( command.type ) {
-	            var subtype = null;
-	            if( command.subtype ) {
-	                subtype = command.subtype;
-	            }
-                var handler = debuggerEventHandlerFactory.create(command.type, subtype);
-                if( handler ) {
-                    handler( command );
-                } else {
-                    env.println( "Unknown command: " + JSON.stringify( command ) );
-                }
+            } catch( exc ) {
+                env.println( 'Unhandled exception: ' + exc.message + ' Stack: ' + exc.stack );
             }
             
 	    },

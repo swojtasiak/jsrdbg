@@ -1850,10 +1850,6 @@
 
         getScriptSourceCode: function( url, line, script ) {
 
-            if( url === 'debugger eval code' ) {
-                return null;
-            }
-
             var source = null;
 
             // Find source object associated with given URL.

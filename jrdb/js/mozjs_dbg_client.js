@@ -361,7 +361,8 @@
     };
 
     Utils.printBreakpoint = function( breakpoint ) {
-        env.println( 'Breakpoint ' + breakpoint.bid + ': script ' + breakpoint.url + ', ' + breakpoint.line + '.' );
+        env.println( 'Breakpoint ' + breakpoint.bid + ': script ' + breakpoint.url + ', ' +
+                        breakpoint.line + ( breakpoint.pending ? ', PENDING' : '' ) + '.' );
     };
     
     Utils.printBacktraceElement = function( i, st ) {
@@ -711,7 +712,8 @@
                 alias: ['version'],
                 help: HELP_VERSION,
                 fn: function( command ) {
-                    env.println('Client version: ' + env.packageVersion  + " Built for SpiderMonkey: " + env.engineMajorVersion + "." + env.engineMinorVersion);
+                    env.println('Client version: ' + env.packageVersion  + " Built for SpiderMonkey: " 
+                                + env.engineMajorVersion + "." + env.engineMinorVersion);
                 }
             },
             { 
@@ -881,7 +883,17 @@
                             return;
                         }
                         env.sendCommand( protocolStrategy.getSetBreakpoint( src, line ), function( packet ) {
-                            env.println( 'Breakpoint ' + packet.bid + ': script ' + packet.url + ', ' + packet.line + '.' );
+                            let pending = '';
+                            if( packet.pending ) {
+                                pending = '(PENDING) ';
+                            }
+                            env.println( 'Breakpoint ' + pending + packet.bid + ': script ' + packet.url + ', ' + packet.line + '.' );
+                            if( packet.pending ) {
+                                env.println('There is no such a script loaded: ' + src + '\n'+
+                                          'Breakpoint has been registered as a pending one.\n'+
+                                          'It means that it will be added as soon as the script is loaded by the debugger.\n'+
+                                          'Please make sure that the script URL is correct.');
+                            }
                         } );
                     }
                 }

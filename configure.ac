@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([jsrdbg], [0.0.4], [slawomir@wojtasiak.com])
+AC_INIT([jsrdbg], [0.0.5], [slawomir@wojtasiak.com])
 m4_include([m4/ax_pthread.m4])
 m4_include([m4/ax_lib_readline.m4])
 AM_INIT_AUTOMAKE

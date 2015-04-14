@@ -203,7 +203,7 @@ int JSDebugger::init() {
         return JDB_ERROR_JS_CANNOT_SET_PROPERTY;
     }
 
-    if( !jsUtils.setPropertyBool(env, "packageVersion", PACKAGE_VERSION ) ) {
+    if( !jsUtils.setPropertyStr(env, "packageVersion", PACKAGE_VERSION ) ) {
         return JDB_ERROR_JS_CANNOT_SET_PROPERTY;
     }
 

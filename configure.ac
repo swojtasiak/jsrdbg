@@ -15,7 +15,7 @@ AC_CONFIG_SRCDIR([src/jsrdbg.cpp])
 AC_PROG_CXX
 AC_PROG_CC
 
-# objcopy is used to change the secrion of the JS files 
+# objcopy is used to change the section of the JS files 
 # linked directly into the library. It is optional tool though.
 AC_CHECK_TOOL([OBJCOPY], [objcopy], [])
 AM_CONDITIONAL(HAVE_OBJCOPY, [test x"$OBJCOPY" != x])
@@ -64,7 +64,7 @@ AM_CONDITIONAL(HAVE_MOZJS_25, [test "x$mozjs_version" = "x25"])
 AS_IF([test "x$mozjs_version" != "x"],
 	[AC_DEFINE_UNQUOTED([MOZJS_VERSION], [$mozjs_version], [SpiderMonkey version.])])
 
-# GNU/reaadline
+# GNU/readline
 AX_LIB_READLINE
 AS_IF([test "x$ax_cv_lib_readline" = "xno"],[AC_MSG_ERROR([libreadline is mandatory.])])
 
@@ -98,3 +98,4 @@ check/Makefile
 ])
 
 AC_OUTPUT
+

@@ -620,7 +620,16 @@
             } else {
                 env.println( 'Unsupported remote error: ' + JSON.stringify( packet ) );
             }
+        },
+        
+        warn: function( packet ) {
+            if( packet.message ) {
+                env.println( 'Remote warning: ' + packet.message );
+            } else {
+                env.println( 'Unsupported remote warning: ' + JSON.stringify( packet ) );
+            }
         }
+
     };
 
     /**********************************/

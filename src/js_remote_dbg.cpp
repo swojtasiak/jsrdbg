@@ -425,6 +425,22 @@ void SpiderMonkeyDebugger::sendCommandToQueue( JSContext *ctx, action_queue &que
 
     DebuggerAction *commandAction = new CommandAction( _clientManager, command );
 
+    // Warn the client.
+    if( queue.getCount() >= 2 ) {
+
+	// Inform client about the problem.
+	Command warning( command.getClientId(), command.getContextId(),
+		MessageFactory::getInstance()->prepareWarningMessage(
+			MessageFactory::CW_ENGINE_PAUSED,
+			"There are pending commands in the internal debugger's queue.\\n" \
+			"It seems that JavaScript engine is blocked and cannot handle commands on the fly.\\n" \
+			"If the application being debugged is blocked on a system call or something,\\n" \
+			"try to resume it for a while in order to execute a piece of JavaScript code.") );
+
+	_clientManager.sendCommand( warning );
+
+    }
+
     if( queue.add( commandAction ) ) {
         // Inform runtime about new debugger commands. The runtime
         // will handle it as soon as possible, but we cannot

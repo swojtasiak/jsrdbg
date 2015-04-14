@@ -28,9 +28,13 @@ public:
         CE_COMMAND_FAILED = 1,
         CE_UNKNOWN_CONTEXT_ID = 2
     };
+    enum WarnCode {
+	CW_ENGINE_PAUSED = 1
+    };
     static MessageFactory *getInstance();
     std::string prepareContextList( const std::vector<JSContextState> &ctxList );
     std::string prepareErrorMessage( ErrorCode errorCode, const std::string &msg );
+    std::string prepareWarningMessage( WarnCode warnCode, const std::string &msg );
 private:
     MessageFactory();
     ~MessageFactory();

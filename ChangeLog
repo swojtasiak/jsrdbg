@@ -12,3 +12,12 @@
  * (slawomir@wojtasiak.com) Broken line numeration in script code viewer (jrdb)
  * (slawomir@wojtasiak.com) Pause is not needed to delete breakpoints
 
+0.0.4 (14.04.2015)
+ * (slawomir@wojtasiak.com) Pending breakpoints are marked on the breakpoints list
+ * (slawomir@wojtasiak.com) Client is warned about the fact that pending breakpoint is registered
+ * (slawomir@wojtasiak.com) Evaluation related fixes
+ * (slawomir@wojtasiak.com) Extended location tracking
+ * (slawomir@wojtasiak.com) Host can be set to null while configuring TCP/IP
+ * (slawomir@wojtasiak.com) Warnings are sent to clients if commands are not
+ being handled on the fly.
+

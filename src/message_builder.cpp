@@ -46,3 +46,10 @@ string MessageFactory::prepareErrorMessage( ErrorCode errorCode, const string &m
     ss << "{\"type\":\"error\",\"code\":" << errorCode << ",\"message\":\"" << msg << "\"}";
     return ss.str();
 }
+
+string MessageFactory::prepareWarningMessage( WarnCode warnCode, const string &msg ) {
+    stringstream ss;
+    ss << "{\"type\":\"warn\",\"code\":" << warnCode << ",\"message\":\"" << msg << "\"}";
+    return ss.str();
+}
+

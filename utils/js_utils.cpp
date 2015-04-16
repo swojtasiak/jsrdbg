@@ -20,6 +20,7 @@
 #include "js_utils.hpp"
 
 #include <string>
+#include <map>
 
 #include "encoding.hpp"
 #include "log.hpp"
@@ -27,6 +28,8 @@
 using namespace Utils;
 using namespace JS;
 using namespace std;
+
+#define RES_MANAGER_HOLDER "____resource_manager_holder"
 
 ExceptionState::ExceptionState( JSContext *context ) {
     _context = context;
@@ -314,7 +317,7 @@ bool MozJSUtils::evaluateScript( JSObject *global, const jstring &script, const 
             .setFileAndLine(fileName, 0)
             .setSourcePolicy(JS::CompileOptions::LAZY_SOURCE);
 
-    js::RootedObject rootedObj(_context, global);
+    JS::RootedObject rootedObj(_context, global);
 
     jsval retval = JSVAL_VOID;
     if (!JS::Evaluate(_context, rootedObj, options, script.c_str(), script.size(), &retval)) {
@@ -508,3 +511,189 @@ bool MozJSUtils::splitCommand( const std::string &packet, int &contextId, std::s
     }
     return result;
 }
+
+struct ResourceManagersHolder {
+    map<string, ResourceManager*> managers;
+};
+
+/**
+ * Prints function arguments into the console.
+ */
+static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value *vp ) {
+
+   if( argc == 0 ) {
+       JS_ReportError( context, "JSR_fn_utils_require:: Bad args." );
+       return JS_FALSE;
+   }
+
+   CallArgs args = CallArgsFromVp(argc, vp);
+
+   JSObject *global = NULL;
+
+#if MOZJS_VERSION == 24
+   // Bear in mind that this method is obsolete since JSAPI 25.
+   global = JS_GetGlobalForScopeChain( context );
+#endif
+
+   // Look for a global object. Firstly arguments are used to localize their
+   // global object; otherwise 'this' is used to identify the global.
+   // Do not hesitate to change it, if you known any better way to do it.
+   // Anyway this solution is so generic that is should work as long
+   // as JS_GetGlobalForObject is not obsoleted.
+
+   for( int i = 0; i < args.length() && global == NULL; i++ ) {
+       Value arg = args.get(i);
+       if( arg.isObject() ) {
+           global = JS_GetGlobalForObject( context, &arg.toObject() );
+       }
+   }
+
+   if( !global ) {
+       Value valThis = args.computeThis( context );
+       if( valThis.isObject() && !valThis.isUndefined() && !valThis.isNull() ) {
+           global = JS_GetGlobalForObject( context, &valThis.toObject() );
+       }
+   }
+
+   if( !global ) {
+       JS_ReportError( context, "JSR_fn_utils_require:: Global not found." );
+       return JS_FALSE;
+   }
+
+   MozJSUtils jsUtils(context);
+
+   string moduleName;
+   string modulePrefix;
+   if(!jsUtils.argsToString(argc, JS_ARGV(context, vp), moduleName)) {
+       JS_ReportError( context, "JSR_fn_utils_require:: Cannot convert arguments to C string." );
+       return JS_FALSE;
+   }
+
+   size_t pos = moduleName.find_last_of( '/' );
+   if( pos != string::npos ) {
+       modulePrefix = moduleName.substr( 0, pos );
+       moduleName = moduleName.substr( pos + 1 );
+   }
+
+   Value valRMHolder;
+   if( !JS_GetProperty( context, global, RES_MANAGER_HOLDER, &valRMHolder ) || !valRMHolder.isObject() ) {
+       JS_ReportError( context, "JSR_fn_utils_require:: ResourceManager holder not found ins the global object." );
+       return JS_FALSE;
+   }
+
+   ResourceManagersHolder *holder = reinterpret_cast<ResourceManagersHolder*>( JS_GetPrivate( &valRMHolder.toObject() ) );
+
+   map<string, ResourceManager*>::iterator it = holder->managers.find( modulePrefix );
+   if( it != holder->managers.end() ) {
+
+       ResourceManager *manager = it->second;
+
+       Resource const * resource = manager->getResource( moduleName );
+       if( resource ) {
+
+           string moduleScript( reinterpret_cast<char*>( resource->addr ), resource->len );
+
+           Value module;
+           if( !jsUtils.evaluateUtf8Script( global, moduleScript, moduleName.c_str(), &module ) ) {
+               JS_ReportError( context, "JSR_fn_utils_require:: Cannot evaluate module." );
+               return JS_FALSE;
+           }
+
+           args.rval().set(module);
+
+       }
+
+       return JS_TRUE;
+   }
+
+   args.rval().setNull();
+
+   return JS_TRUE;
+}
+
+void JSManagers_FinalizeOp( JSFreeOp *fop, JSObject *obj ) {
+    ResourceManagersHolder *holders = reinterpret_cast<ResourceManagersHolder*>( JS_GetPrivate( obj ) );
+    if( holders ) {
+        delete holders;
+    }
+}
+
+static JSClass JSR_PTR_Holder = { "JSR_Utils_PTR_Holder",
+    JSCLASS_HAS_PRIVATE,
+    JS_PropertyStub,
+    JS_DeletePropertyStub,
+    JS_PropertyStub,
+    JS_StrictPropertyStub,
+    JS_EnumerateStub,
+    JS_ResolveStub,
+    JS_ConvertStub,
+    JSManagers_FinalizeOp,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    { NULL }
+};
+
+static JSFunctionSpec JSR_EngineEnvironmentFuntions[] = {
+    { "require", JSOP_WRAPPER ( JSR_fn_utils_require ), 0, JSPROP_PERMANENT | JSPROP_ENUMERATE },
+    JS_FS_END
+};
+
+bool MozJSUtils::addResourceManager( JSObject *global, const string &prefix, ResourceManager &resourceManager ) {
+
+    Value valRMHolder;
+    if( !JS_GetProperty( _context, global, RES_MANAGER_HOLDER, &valRMHolder ) || !valRMHolder.isObject() ) {
+        JS_ReportError( _context, "MozJSUtils::addResourceManager:: ResourceManager holder not found ins the global object." );
+        return false;
+    }
+
+    ResourceManagersHolder *managers = reinterpret_cast<ResourceManagersHolder*>( JS_GetPrivate( &valRMHolder.toObject() ) );
+    if( !managers ) {
+        JS_ReportError( _context, "MozJSUtils::addResourceManager:: ResourceManagersHolder is null." );
+        return false;
+    }
+
+    managers->managers.insert( pair<string, ResourceManager*>( prefix, &resourceManager ) );
+
+    return true;
+}
+
+bool MozJSUtils::registerModuleLoader( JSObject *global ) {
+
+    if ( !JS_DefineFunctions( _context, global, &JSR_EngineEnvironmentFuntions[0] ) ) {
+        LoggerFactory::getLogger().error( "JSDebuggerEngine::registerModuleLoader: Cannot define 'require' function." );
+        return false;
+    }
+
+    // Store resource manager pointer for future usage.
+
+    JSObject *holder = JS_NewObject( _context, &JSR_PTR_Holder, NULL, NULL );
+    if ( holder == NULL ) {
+        LoggerFactory::getLogger().error( "JSDebuggerEngine::registerModuleLoader: Cannot define 'require' function." );
+        return false ;
+    }
+
+    RootedObject jsHolder( _context, holder );
+    RootedObject jsGlobal( _context, global );
+
+    if( !setPropertyObj( jsGlobal, RES_MANAGER_HOLDER, jsHolder ) ) {
+        LoggerFactory::getLogger().error( "JSDebuggerEngine::registerModuleLoader: Cannot create holder for resource managers." );
+        return false;
+    }
+
+    ResourceManagersHolder *holders = new ResourceManagersHolder();
+
+    JS_SetPrivate( holder, holders );
+
+    JSBool result;
+    if( !JS_SetPropertyAttributes( _context, global, RES_MANAGER_HOLDER, JSPROP_PERMANENT | JSPROP_READONLY, &result ) ) {
+        LoggerFactory::getLogger().error( "JSDebuggerEngine::registerModuleLoader: Cannot change property attributes." );
+        return false;
+    }
+
+    return true;
+
+}
+

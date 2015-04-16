@@ -13,8 +13,6 @@ libjsrdbg_la_SOURCES = jsrdbg.cpp \
 	protocol.cpp \
 	tcp_protocol.hpp \
 	tcp_protocol.cpp \
-	resources.hpp \
-	resources.cpp \
 	debuggers.hpp \
 	debuggers.cpp \
 	js_remote_dbg.hpp \

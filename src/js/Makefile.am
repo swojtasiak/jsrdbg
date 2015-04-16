@@ -26,13 +26,19 @@ endif
 	@echo >>"$@"
 
 noinst_LTLIBRARIES = libdbgres.la
-libdbgres_la_SOURCES = mozjs_dbg.js
-nodist_libdbgres_la_SOURCES = mozjs_dbg.js.lo
-libdbgres_la_LIBADD = mozjs_dbg.js.lo
+
+libdbgres_la_SOURCES = js_resources.hpp \
+	js_resources.cpp
+
+libdbgres_la_CPPFLAGS = -I$(top_srcdir)/utils -z noexecstack
+
+libdbgres_la_LIBADD = mozjs_dbg.js.lo \
+	module.js.lo
+
 libdbgres_la_LDFLAGS = -no-undefined 
 
-CLEANFILES = *.js.lo *.js.o
+CLEANFILES = *.js.lo \
+	*.js.o
 
-EXTRA_DIST = Gruntfile.js \
-	mozjs_dbg.js \
+EXTRA_DIST = *.js \
 	package.json

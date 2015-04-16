@@ -34,9 +34,8 @@
 using namespace std;
 using namespace Utils;
 
-FSEventLoop::FSEventLoop( std::vector<IFSEventProducer*> producers, std::vector<IFSEventConsumer*> consumers )
-    : AbstractEventLoop( producers, consumers ),
-      _running( false ) {
+FSEventLoop::FSEventLoop(std::vector<IFSEventProducer*> producers, std::vector<IFSEventConsumer*> consumers) :
+        AbstractEventLoop( producers, consumers ), _running( false ) {
 }
 
 FSEventLoop::~FSEventLoop() {
@@ -59,88 +58,88 @@ int FSEventLoop::loop() {
     fd_set write_fds;
     int fdmax = 0;
 
-    FD_ZERO(&write_fds);
-    FD_ZERO(&read_fds);
+    FD_ZERO( &write_fds );
+    FD_ZERO( &read_fds );
 
     _running = true;
 
-    while( _running ) {
+    while ( _running ) {
 
         int rc;
 
         fdmax = 0;
 
         // Prepare bits for incoming events.
-        FD_ZERO(&read_fds);
-        for( std::vector<IFSEventConsumer*>::iterator it = _consumers.begin(); it != _consumers.end(); it++ ) {
+        FD_ZERO( &read_fds );
+        for ( std::vector<IFSEventConsumer*>::iterator it = _consumers.begin(); it != _consumers.end(); it++ ) {
             IFSEventConsumer *consumer = *it;
             int fd = consumer->getConsumerFD();
             FD_SET( fd, &read_fds );
-            if( fd > fdmax ) {
+            if ( fd > fdmax ) {
                 fdmax = fd;
             }
         }
 
         // Prepare outgoing flags basing on the current state of the producers.
-        FD_ZERO(&write_fds);
-        for( std::vector<IFSEventProducer*>::iterator it = _producers.begin(); it != _producers.end(); it++ ) {
+        FD_ZERO( &write_fds );
+        for ( std::vector<IFSEventProducer*>::iterator it = _producers.begin(); it != _producers.end(); it++ ) {
             IFSEventProducer *producer = *it;
-            if( producer->isReady() ) {
+            if ( producer->isReady() ) {
                 int fd = producer->getProducerFD();
                 FD_SET( fd, &write_fds );
-                if( fd > fdmax ) {
+                if ( fd > fdmax ) {
                     fdmax = fd;
                 }
             }
         }
 
-	rc = select( fdmax + 1, &read_fds, &write_fds, NULL, NULL );
+        rc = select( fdmax + 1, &read_fds, &write_fds, NULL, NULL );
 
-        if( rc == -1 ) {
-            if( errno == EINTR ) {
-        	continue;
+        if ( rc == -1 ) {
+            if ( errno == EINTR ) {
+                continue;
             } else {
-	        cout << "Select failed errno: " << errno << " - " << strerror( errno ) << endl;
-	        error = JDB_ERROR_SELECT_FAILED;
-	        break;
+                cout << "Select failed errno: " << errno << " - " << strerror( errno ) << endl;
+                error = JDB_ERROR_SELECT_FAILED;
+                break;
             }
         }
 
-        for( int i = 0; i <= fdmax; i++) {
+        for ( int i = 0; i <= fdmax; i++ ) {
 
             // Write data.
-            if( FD_ISSET( i, &write_fds ) ) {
+            if ( FD_ISSET( i, &write_fds ) ) {
                 // Find producer for given socket.
-                for( std::vector<IFSEventProducer*>::iterator it = _producers.begin(); it != _producers.end(); ) {
-                   if( (*it)->getProducerFD() == i ) {
-                       int error = (*it)->write();
-                       if( error ) {
-                           log.error("Producer failed with error: %d", error);
-                           (*it)->closeProducer( error );
-                           _producers.erase(it);
-                           continue;
-                       }
-                   }
-                   it++;
+                for ( std::vector<IFSEventProducer*>::iterator it = _producers.begin(); it != _producers.end(); ) {
+                    if ( (*it)->getProducerFD() == i ) {
+                        int error = (*it)->write();
+                        if ( error ) {
+                            log.error( "Producer failed with error: %d", error );
+                            (*it)->closeProducer( error );
+                            _producers.erase( it );
+                            continue;
+                        }
+                    }
+                    it++;
                 }
             }
 
             // Read data.
-            if( FD_ISSET( i, &read_fds ) ) {
+            if ( FD_ISSET( i, &read_fds ) ) {
                 // Find producer for given socket.
-                for( std::vector<IFSEventConsumer*>::iterator it = _consumers.begin(); it != _consumers.end(); ) {
-                   if( (*it)->getConsumerFD() == i ) {
-                       int error = (*it)->read();
-                       if( error && error != JDB_ERROR_WOULD_BLOCK ) {
-                	   if( error != JDB_ERROR_FILE_DESCRIPTOR_CLOSED ) {
-                	       log.error("Consumer failed with error: %d", error);
-                	   }
-                           (*it)->closeConsumer( error );
-                           _consumers.erase(it);
-                           continue;
-                       }
-                   }
-                   it++;
+                for ( std::vector<IFSEventConsumer*>::iterator it = _consumers.begin(); it != _consumers.end(); ) {
+                    if ( (*it)->getConsumerFD() == i ) {
+                        int error = (*it)->read();
+                        if ( error && error != JDB_ERROR_WOULD_BLOCK ) {
+                            if ( error != JDB_ERROR_FILE_DESCRIPTOR_CLOSED ) {
+                                log.error( "Consumer failed with error: %d", error );
+                            }
+                            (*it)->closeConsumer( error );
+                            _consumers.erase( it );
+                            continue;
+                        }
+                    }
+                    it++;
                 }
             }
 
@@ -164,19 +163,19 @@ int BufferedFSEventConsumer::read() {
     Logger& log = LoggerFactory::getLogger();
     std::vector<int8_t> &consumerBuffer = getConsumerBuffer();
     int8_t buffer[FD_MAX_LOCAL_BUFFER_SIZE];
-    while( true ) {
+    while ( true ) {
         int available = FD_MAX_BUFFER_SIZE - consumerBuffer.size();
         int min = available > FD_MAX_LOCAL_BUFFER_SIZE ? FD_MAX_LOCAL_BUFFER_SIZE : available;
-        if( min == 0 ) {
+        if ( min == 0 ) {
             // Sorry the buffer is full, client have to interpret it first.
             return JDB_ERROR_BUFFER_IS_FULL;
         }
         int rc = ::read( getConsumerFD(), buffer, min );
-        if( rc < 0 ) {
-            if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) || ( errno == EINTR ) ) {
+        if ( rc < 0 ) {
+            if ( ( errno == EAGAIN) || ( errno == EWOULDBLOCK) || ( errno == EINTR) ) {
                 // Do nothing, maybe next time something will be read.
                 int error;
-                if( ( error = handleBuffer() ) ) {
+                if ( (error = handleBuffer()) ) {
                     return error;
                 }
                 return JDB_ERROR_WOULD_BLOCK;
@@ -185,7 +184,7 @@ int BufferedFSEventConsumer::read() {
                 // Low level read error.
                 return JDB_ERROR_READ_ERROR;
             }
-        } else if( rc == 0 ) {
+        } else if ( rc == 0 ) {
             // In this case we are not interested in returned value,
             // because the file descriptor is being closed anyway.
             handleBuffer();
@@ -195,10 +194,10 @@ int BufferedFSEventConsumer::read() {
             // Copy read data to the destination buffer. Notice that we do not
             // net the best performance possible here, so we can improve
             // code readability a make it less-error-prone.
-            if( consumerBuffer.capacity() == 0 ) {
-                consumerBuffer.reserve( consumerBuffer.size() + ( FD_MAX_LOCAL_BUFFER_SIZE * 10 ) );
+            if ( consumerBuffer.capacity() == 0 ) {
+                consumerBuffer.reserve( consumerBuffer.size() + ( FD_MAX_LOCAL_BUFFER_SIZE * 10) );
             }
-            for( int i = 0; i < rc; i++ ) {
+            for ( int i = 0; i < rc; i++ ) {
                 consumerBuffer.push_back( buffer[i] );
             }
         }
@@ -228,24 +227,24 @@ int BufferedFSEventProducer::BufferedFSEventProducer::write() {
     int error = JDB_ERROR_NO_ERROR;
     vector<int8_t> &producerBuffer = getProducerBuffer();
     error = prepareBuffer();
-    if( error ) {
+    if ( error ) {
         return error;
     }
     int fd = getProducerFD();
-    while( ( error == JDB_ERROR_NO_ERROR ) && !producerBuffer.empty() ) {
+    while ( (error == JDB_ERROR_NO_ERROR) && !producerBuffer.empty() ) {
         int i;
         static uint8_t buffer[FD_MAX_LOCAL_BUFFER_SIZE];
         int bufferSize = producerBuffer.size();
         // Fill local buffer, just in order to allow write
         // whole block at once.
-        for( i = 0; i < bufferSize && i < FD_MAX_LOCAL_BUFFER_SIZE; i++ ) {
+        for ( i = 0; i < bufferSize && i < FD_MAX_LOCAL_BUFFER_SIZE; i++ ) {
             buffer[i] = producerBuffer[i];
         }
         int sent = 0;
-        while( i ) {
-            int rc = ::write( fd, buffer + sent, i  );
-            if( rc < 0 ) {
-                if( ( errno == EAGAIN ) || ( errno == EWOULDBLOCK ) || ( errno == EINTR ) ) {
+        while ( i ) {
+            int rc = ::write( fd, buffer + sent, i );
+            if ( rc < 0 ) {
+                if ( ( errno == EAGAIN) || ( errno == EWOULDBLOCK) || ( errno == EINTR) ) {
                     // Do nothing, maybe next time something will be written.
                     error = JDB_ERROR_WOULD_BLOCK;
                     break;
@@ -255,12 +254,12 @@ int BufferedFSEventProducer::BufferedFSEventProducer::write() {
                     error = JDB_ERROR_WRITE_ERROR;
                     break;
                 }
-            } else if( rc > 0 ) {
+            } else if ( rc > 0 ) {
                 i -= rc;
                 sent += rc;
             }
         }
-        if( sent > 0 ) {
+        if ( sent > 0 ) {
             producerBuffer.erase( producerBuffer.begin(), producerBuffer.begin() + sent );
         }
     }

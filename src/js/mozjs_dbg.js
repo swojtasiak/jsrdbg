@@ -19,6 +19,8 @@
 
 (function() {
 
+    var dbgModule = require('dbg/module');
+    
     // Change it to true in order to enable experimental functionalities
     // that should be available in the release build yet.
 

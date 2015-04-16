@@ -28,7 +28,6 @@
 #include <encoding.hpp>
 
 #include "message_builder.hpp"
-#include "resources.hpp"
 
 using namespace JSR;
 using namespace JS;
@@ -428,16 +427,15 @@ void SpiderMonkeyDebugger::sendCommandToQueue( JSContext *ctx, action_queue &que
     // Warn the client.
     if( queue.getCount() >= 2 ) {
 
-	// Inform client about the problem.
-	Command warning( command.getClientId(), command.getContextId(),
-		MessageFactory::getInstance()->prepareWarningMessage(
-			MessageFactory::CW_ENGINE_PAUSED,
-			"There are pending commands in the internal debugger's queue.\\n" \
-			"It seems that JavaScript engine is blocked and cannot handle commands on the fly.\\n" \
-			"If the application being debugged is blocked on a system call or something,\\n" \
-			"try to resume it for a while in order to execute a piece of JavaScript code.") );
+        // Inform client about the problem.
+        Command warning( command.getClientId(), command.getContextId(),
+                MessageFactory::getInstance()->prepareWarningMessage( MessageFactory::CW_ENGINE_PAUSED,
+                        "There are pending commands in the internal debugger's queue.\\n"
+                        "It seems that JavaScript engine is blocked and cannot handle commands on the fly.\\n"
+                        "If the application being debugged is blocked on a system call or something,\\n"
+                        "try to resume it for a while in order to execute a piece of JavaScript code." ) );
 
-	_clientManager.sendCommand( warning );
+        _clientManager.sendCommand( warning );
 
     }
 

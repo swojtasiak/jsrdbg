@@ -41,7 +41,7 @@ public:
         CE_UNKNOWN_CONTEXT_ID = 2
     };
     enum WarnCode {
-	CW_ENGINE_PAUSED = 1
+        CW_ENGINE_PAUSED = 1
     };
     static MessageFactory *getInstance();
     std::string prepareContextList( const std::vector<JSContextState> &ctxList );

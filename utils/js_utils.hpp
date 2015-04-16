@@ -25,6 +25,7 @@
 #include <jsdbgapi.h>
 
 #include "encoding.hpp"
+#include "res_manager.hpp"
 
 namespace Utils {
 
@@ -86,6 +87,9 @@ public:
     bool isFunctionObject( JSObject *fn );
     // Command parsing.
     static bool splitCommand( const std::string &packet, int &contextId, std::string &jsonCommand );
+    // Support for module loading.
+    bool registerModuleLoader( JSObject *global );
+    bool addResourceManager( JSObject *global, const std::string &prefix, ResourceManager &resourceManager );
 private:
     JSContext *_context;
     int _lastError;

@@ -23,7 +23,7 @@
 #include <jsdbg_common.h>
 #include <js_utils.hpp>
 
-#include "resources.hpp"
+#include "js/js_resources.hpp"
 
 using namespace JSR;
 using namespace Utils;
@@ -370,15 +370,31 @@ int JSDebuggerEngine::install() {
     }
 #endif
 
+    if( !jsUtils.registerModuleLoader( debuggerGlobal ) ) {
+        _log.error( "JSDebuggerEngine::install: Cannot install module loader." );
+        return JSR_ERROR_SM_CANNOT_REGISTER_MODULE_LOADER;
+    }
+
     if ( !JS_DefineFunctions( _ctx, env, &MozJS::JSR_EngineEnvironmentFuntions[0] ) ) {
         _log.error( "JSDebuggerEngine::install: Cannot define JS functions (JS_DefineFunctions failed)." );
         return JSR_ERROR_SM_CANNOT_DEFINE_FUNCTION;
     }
 
     // Load debugger bootstrap script.
-    StringResource debuggerScript = Resources::getStringResource(Resources::MOZJS_DEBUGGER);
+    ResourceManager &manager = GetResourceManager();
 
-    const string &script = debuggerScript.getValue();
+    if( !jsUtils.addResourceManager( debuggerGlobal, "dbg", manager ) ) {
+        _log.error( "JSDebuggerEngine::install: Cannot add ResourceManager." );
+        return JSR_ERROR_SM_CANNOT_REGISTER_MODULE_LOADER;
+    }
+
+    Resource const *resource = manager.getResource("mozjs_dbg");
+    if( !resource ) {
+        _log.error( "JSDebuggerEngine::install: Cannot get the main module: mozjs_dbg." );
+        return JSR_ERROR_SM_CANNOT_DEFINE_FUNCTION;
+    }
+
+    const string script = resource->toString();
 
     // Prepares 'engine.options' object.
     RootedObject envOptions( _ctx, JS_NewObject( _ctx, NULL, NULL, NULL ) );

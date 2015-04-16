@@ -30,7 +30,6 @@
 #include <threads.hpp>
 #include <log.hpp>
 
-#include "resources.hpp"
 #include "protocol.hpp"
 #include "tcp_protocol.hpp"
 #include "js_remote_dbg.hpp"
@@ -273,7 +272,7 @@ void JSRemoteDebuggerCfg::setTcpHost(const char* tcpHost) {
     if( tcpHost != NULL ) {
         _tcpHost = tcpHost;
     } else {
-	_tcpHost = "";
+        _tcpHost = "";
     }
 }
 

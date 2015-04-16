@@ -333,11 +333,11 @@ public:
      * Returns number of elements in the queue.
      */
     int getCount() {
-	int count;
-	_mutex.lock();
-	count = _queue.size();
-	_mutex.unlock();
-	return count;
+        int count;
+        _mutex.lock();
+        count = _queue.size();
+        _mutex.unlock();
+        return count;
     }
 
     /**

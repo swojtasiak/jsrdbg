@@ -16,8 +16,7 @@ module.exports = function(grunt) {
             },
             all: {
                 src: [
-                    '*_dbg.js',
-                    'Gruntfile.js'
+                    '*.js',
                 ]
             }
         },
@@ -26,12 +25,8 @@ module.exports = function(grunt) {
             options: {
                 cwd: '.'
             },
-            gruntfile: {
-                files: ['Gruntfile.js'],
-                tasks: ['newer:jshint:all']
-            },
             js: {
-                files: ['*_dbg.js'],
+                files: ['*.js'],
                 tasks: ['newer:jshint:all']
             }
         }

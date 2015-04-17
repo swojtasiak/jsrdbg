@@ -21,8 +21,6 @@ jrdb_SOURCES=jrdb.cpp \
 	debugger.cpp \
 	js_debugger.hpp \
 	js_debugger.cpp \
-	resources.hpp \
-	resources.cpp \
 	errors.hpp
 	
 jrdb_CPPFLAGS = $(MOZJS_CFLAGS) -I$(top_srcdir)/utils -Wno-invalid-offsetof

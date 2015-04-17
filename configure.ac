@@ -88,6 +88,7 @@ AC_CONFIG_FILES([
 fix/Makefile
 Makefile
 public/Makefile
+utils/js/Makefile
 utils/Makefile
 src/js/Makefile
 src/Makefile

@@ -16,4 +16,6 @@ EXTRA_DIST = example/AUTHORS \
 	example/src/js/Makefile.am \
 	example/src/js/example.js \
 	example/src/js/package.json \
-	example/src/main.cpp
+	example/src/main.cpp \
+	Commons.mk
+

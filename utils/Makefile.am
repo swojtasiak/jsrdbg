@@ -1,4 +1,9 @@
+@SET_MAKE@
+
+SUBDIRS = js
+
 noinst_LTLIBRARIES = libutils.la
+
 libutils_la_SOURCES = threads.cpp \
 	threads.hpp \
 	timestamp.cpp \
@@ -15,4 +20,5 @@ libutils_la_SOURCES = threads.cpp \
 	res_manager.hpp
 
 libutils_la_CPPFLAGS = $(MOZJS_CFLAGS) -Wno-invalid-offsetof -z noexecstack
+libutils_la_LIBADD = js/libresutils.la
 libutils_la_LDFLAGS = -no-undefined $(MOZJS_LIBS)

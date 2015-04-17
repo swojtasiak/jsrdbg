@@ -577,7 +577,7 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
 
    Value valRMHolder;
    if( !JS_GetProperty( context, global, RES_MANAGER_HOLDER, &valRMHolder ) || !valRMHolder.isObject() ) {
-       JS_ReportError( context, "JSR_fn_utils_require:: ResourceManager holder not found ins the global object." );
+       JS_ReportError( context, "JSR_fn_utils_require:: ResourceManager holder not found in the global object." );
        return JS_FALSE;
    }
 

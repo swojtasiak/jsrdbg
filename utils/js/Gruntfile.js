@@ -17,7 +17,6 @@ module.exports = function(grunt) {
             all: {
                 src: [
                     '*.js',
-                    'Gruntfile.js'
                 ]
             }
         },
@@ -41,4 +40,3 @@ module.exports = function(grunt) {
     });
 
 };
-

@@ -23,8 +23,9 @@
 
 #include <encoding.hpp>
 #include <js_utils.hpp>
+#include <js/utils_resources.hpp>
 
-#include "resources.hpp"
+#include "js/js_resources.hpp"
 #include "errors.hpp"
 
 using namespace std;
@@ -32,9 +33,17 @@ using namespace JS;
 using namespace Utils;
 
 /* The class of the global object. */
-static JSClass JS_DBG_Global = { "global", JSCLASS_GLOBAL_FLAGS, JS_PropertyStub,
-        JS_DeletePropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
-        JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub };
+static JSClass JS_DBG_Global = {
+    "global",
+    JSCLASS_GLOBAL_FLAGS,
+    JS_PropertyStub,
+    JS_DeletePropertyStub,
+    JS_PropertyStub,
+    JS_StrictPropertyStub,
+    JS_EnumerateStub,
+    JS_ResolveStub,
+    JS_ConvertStub
+};
 
 /* Prints arguments to the console. */
 static JSBool JDB_fn_print_core( JSContext *cx, unsigned int argc, Value *vp, bool endline ) {
@@ -179,17 +188,27 @@ int JSDebugger::init() {
     /* Set the context's global */
     JS_InitStandardClasses(_cx, global);
 
-    StringResource script = Resources::getStringResource(Resources::MOZJS_DEBUGGER_CLIENT);
-    if( script.isEmpty() ) {
-        return JDB_ERROR_JS_CODE_NOT_FOUND;
+    MozJSUtils jsUtils(_cx);
+
+    Utils::ResourceManager &jrdbRM = JRDB::GetResourceManager();
+
+    // Registers module for client modules and utility modules.
+    if( !jsUtils.registerModuleLoader( global ) ||
+            !jsUtils.addResourceManager( global, "client", jrdbRM ) ||
+            !jsUtils.addResourceManager( global, "utils", Utils::GetResourceManager() ) ) {
+        return JDB_ERROR_JS_CANNOT_REGISTER_MODULE_LOADER;
+    }
+
+    Resource const * script = jrdbRM.getResource( "mozjs_dbg_client" );
+    if( !script ) {
+        // Very unlikely to fail.
+        return JDB_ERROR_JS_ENGINE_FAILED;
     }
 
     RootedObject env( _cx, JS_NewObject( _cx, NULL, NULL, NULL ) );
     if( !env ) {
         return JDB_ERROR_JS_CANNOT_CREATE_OBJECT;
     }
-
-    MozJSUtils jsUtils(_cx);
 
     if( !jsUtils.setPropertyObj(global, "env", env ) ) {
         return JDB_ERROR_JS_CANNOT_SET_PROPERTY;
@@ -212,7 +231,7 @@ int JSDebugger::init() {
     }
 
     JS::Value retval = JSVAL_VOID;
-    if( !jsUtils.evaluateUtf8Script( global, script.getValue(), "mozjs_dbg_client.js", &retval ) ) {
+    if( !jsUtils.evaluateUtf8Script( global, script->toString(), "mozjs_dbg_client.js", &retval ) ) {
         return JDB_ERROR_JS_DEBUGGER_SCRIPT_FAILED;
     }
 

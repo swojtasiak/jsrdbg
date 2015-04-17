@@ -44,5 +44,6 @@
 #define JDB_ERROR_JS_FUNCTION_FAILED                21
 #define JDB_ERROR_MALICIOUS_DATA                    22
 #define JDB_ERROR_JS_JSON_PARSING_FAILED            23
+#define JDB_ERROR_JS_CANNOT_REGISTER_MODULE_LOADER  24
 
 #endif /* SRC_ERRORS_HPP_ */

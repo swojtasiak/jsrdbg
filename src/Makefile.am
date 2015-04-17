@@ -1,4 +1,3 @@
-
 @SET_MAKE@
 
 SUBDIRS = js

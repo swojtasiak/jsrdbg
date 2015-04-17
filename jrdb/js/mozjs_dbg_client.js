@@ -19,6 +19,8 @@
 
 (function() {
 
+    var argsParser = require('utils/moduleArgsParser');
+
     const HELP_VERSION = ""+
         "Shows application version.";
 

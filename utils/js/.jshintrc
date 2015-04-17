@@ -1,0 +1,7 @@
+{
+  "moz": true,
+  "undef": true,
+  "unused": false,
+  "predef": [ "debuggee","print","Debugger", "Frame", "Script", "env", "module", "require" ]
+}
+

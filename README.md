@@ -7,9 +7,9 @@ The following chapters describe some of the most important features of the proje
 
 This is an implementation of a high level debugging protocol for SpiderMonkey 
 engine which is available as a shared library. The library can be used to 
-integrate debugging facilities into an existing application laveraging 
+integrate debugging facilities into an existing application leveraging 
 SpiderMonkey engine. There are several integration possibilities including 
-exposition of the high level debugger API localy directly to the application
+exposition of the high level debugger API locally directly to the application
 and even exposing it to remote clients using full duplex TCP/IP communication.
 
 The project consists of two main parts. The debugger engine itself in a form
@@ -24,7 +24,7 @@ chapters.
 
 There are plenty of ways how an application can be integrated with a 
 debugger, but the easier one is probably to integrate it with a remote debugger
-which is based on TCP/IP connections. It's probably the best choise, due to the
+which is based on TCP/IP connections. It's probably the best choice, due to the
 fact that integration is really simple and the debugger is fully functional
 without any additional work, which is needed in case of the local debugger 
 implementation. In order to integrate with the local debugger you have to 
@@ -37,7 +37,7 @@ completed in a few lines of code. The working example is available in the
 really simple, the character encoding is broken and there is almost no error
 handling, but it shows how the process of integration looks like. 
 
-Having working SpiderMonkey engine embeeded in your code, everything you have 
+Having working SpiderMonkey engine embedded in your code, everything you have 
 to do is to create a new instance of the JSRemoteDebugger class which needs 
 JSRemoteDebuggerCfg instance when initialized. Notice that the debugger itself
 is not connected to any specific JSRuntime and JSContext instance. It's designed
@@ -57,7 +57,7 @@ So being familiar with that, we can try to prepare fully configured remote
 debugger instance for our own application. Let's say we need to bind it only
 to the localhost and to the default TCP/IP port 8089. We also would like the
 debugger to suspend as soon as a debuggee started in order to debug the script
-from the beggining. Nothing easier than that:
+from the beginning. Nothing easier than that:
 
 ```cpp
 JSRemoteDebuggerCfg cfg;
@@ -98,7 +98,7 @@ debug. A name of the context which is just a kind of identifier used on the
 client level just in order to communicate with concrete context instance. 
 The last one holds debugger engine configuration parameters JSDbgEngineOptions.
 
-When the installation is completed you have you debugger engine up and running,
+When the installation is completed you have your debugger engine up and running,
 but we need a way to do some interaction with it. Protocol mentioned before is
 responsible for exposing communication interface. In our case it's TCP/IP 
 protocol, so the next thing we have to do is to start the TCP/IP server 
@@ -138,7 +138,7 @@ synchronize source code position if JS engine being debugged messes up with
 line numbers.
 
 The rest of the code explains itself. Only one thing that might be really 
-interesing here is the model of error handling. Every method exposed by the
+interesting here is the model of error handling. Every method exposed by the
 debugging engine returns one of the unified error codes. All the codes are
 available in the following header file: jsrdbg/jsdbg_common.h. Bear in mind
 that it's up to you to uninstall every context correctly before deleting the
@@ -163,7 +163,7 @@ that everything works and you should be able to use jrdb client in order to
 make a remote connection to the debugger.
 
 Of curse it's a very young project, so there is always a risk of a nasty bug
-or something, so do not hesitate to report everything or provide a path if you
+or something, so do not hesitate to report everything or provide a patch if you
 find something.
 
 As was said before, there is also a local debugger available, but its
@@ -219,7 +219,7 @@ Use jrdb command in order to connect to the debugger.
 Application is suspended.
 ```
 
-Ok, it means that application has been started in the suspended mode described
+OK, it means that application has been started in the suspended mode described
 before and is waiting for new connections. It uses the default TCP/IP port, so
 everything that has to be done to connect it is to run jrdb.
 
@@ -327,7 +327,7 @@ point where debugger is currently paused. The asterisk after the line number
 tells us where we are paused. In this particular case we are paused on 
 'debugger' statement which is quite interesting one, because it can be used 
 directly in the code as a breakpoint in order to make the debugger pause the 
-application. OK, so let's steep through the next few instructions.
+application. OK, so let's step through the next few instructions.
 
 ```
 jrdb> s
@@ -410,7 +410,7 @@ which does only one thing pauses when executed. It's why the debugger paused
 in the evaluated code after we continued execution using 'continue' command.
 So as you can see you have really pretty much control over the debugged code. 
 But remember that with great power comes great responsibility, it's not really 
-hard to broke the whole debugged application using such evaluation. Ok, let's 
+hard to break the whole debugged application using such evaluation. OK, let's 
 go out from the evaluated code. Remember that you can display all local 
 variables using 'info locals' command, but head over to the 'help' description,
 because it can be a quite tricky instruction and you probably will be
@@ -435,7 +435,7 @@ Some interesting commands:
 displayed in the console as well as log messages from the client.
 
 *animation* - If enabled, every time when client receives information that
-debuggerhas paused, it displays bigger source context and highlights the line
+debugger has paused, it displays bigger source context and highlights the line
 where debugger is paused. For instance:
 
 ```
@@ -658,7 +658,7 @@ Standard parameters described above have been omitted intentionally.
     Response:
         subtype - 'breakpoint_set'
         bid - Numeric breakpoint identifier.
-        url - Script file where breakpint has been set.
+        url - Script file where breakpoint has been set.
         line - Line at which breakpoint has been set.
         pending - False if breakpoint has been already registered, true if it's a
                   pending breakpoint which waits for the script for being loaded.
@@ -799,7 +799,7 @@ Standard parameters described above have been omitted intentionally.
         subtype - 'breakpoints_list'
         breakpoints - Array of available breakpoints.
             bid - Numeric breakpoint identifier.
-            url - Script file where breakpint has been set.
+            url - Script file where breakpoint has been set.
             line - Line at which breakpoint has been set.
             pending (boolean) - False if breakpoint has been already registered, 
                       true if it's a pending breakpoint which waits for the script

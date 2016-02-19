@@ -218,6 +218,7 @@ public:
     /**
      * Starts a debugger instance.
      * This method have to be called from the JS engine thread.
+     * Starts a new thread in the background if protocol is PROTOCOL_TCP_IP.
      * @return Error code.
      */
     virtual int start();

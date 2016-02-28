@@ -17,8 +17,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-using namespace std;
-
 #include <stdlib.h>
 #include <iostream>
 #include <errno.h>
@@ -27,6 +25,7 @@ using namespace std;
 #include <termios.h>
 #endif
 #include <unistd.h>
+#include <signal.h>
 
 #include "getopt_config.hpp"
 #include "tcp_client.hpp"
@@ -36,6 +35,30 @@ using namespace std;
 #include "js_debugger.hpp"
 
 using namespace std;
+
+static void signal_handler(int signo) {
+    ReadLine &rl = ReadLine::getInstance();
+    EditorState state("quit", 5);
+    rl.restoreEditor(state);
+}
+
+#ifdef HAVE_TERMIOS_H
+class SaveTerminalAttributes {
+public:
+    SaveTerminalAttributes() {
+        tcgetattr( STDIN_FILENO, &_attrs );
+    }
+    ~SaveTerminalAttributes() {
+        restore();
+    }
+    void restore() {
+        tcsetattr( STDIN_FILENO, TCSANOW, &_attrs );
+    }
+
+private:
+    termios _attrs;
+};
+#endif
 
 class ApplicationCtxImpl : public ApplicationCtx {
 public:
@@ -122,14 +145,22 @@ private:
 int main(int argc, char **argv) {
 
 #ifdef HAVE_TERMIOS_H
-    termios termAttrs;
-
     // Store terminal attributes.
-    tcgetattr( STDIN_FILENO, &termAttrs );
+    SaveTerminalAttributes termAttrs;
 #endif
 
-    /* Sets the environemtn's default locale. */
+    // Sets the environment's default locale.
     setlocale(LC_ALL, "");
+
+    // Register signal handler.
+    struct sigaction sa;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sa.sa_handler = signal_handler;
+    if (sigaction(SIGINT, &sa, NULL)) {
+        cout << "Could not register signal handler" << endl;
+        exit(1);
+    }
 
     // Parse configuration.
     Configuration configuration;
@@ -197,11 +228,6 @@ int main(int argc, char **argv) {
     delete client;
 
     dbg.destroy();
-
-#ifdef HAVE_TERMIOS_H
-    // Restore terminal attributes.
-    tcsetattr( STDIN_FILENO, TCSANOW, &termAttrs );
-#endif
 
     exit(0);
 }

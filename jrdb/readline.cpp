@@ -75,7 +75,7 @@ ReadLine::ReadLine() {
 ReadLine::~ReadLine() {
 }
 
-void ReadLine::restoreEditor( EditorState &state) {
+void ReadLine::restoreEditor( EditorState &state ) {
     // Restore editor sate.
     ::rl_set_prompt(prompt);
     ::rl_replace_line(state.getLine().c_str(), 0);

@@ -174,7 +174,8 @@ int main(int argc, char **argv) {
 
     // Connect to a debugger instance.
     TCPClient *client;
-    int error = TCPClient::Connect( configuration.getHost(), configuration.getPort(), &client );
+    int error = TCPClient::Connect( configuration.getHost(),
+            configuration.getPort(), &client );
     if( error ) {
         cout << strerror( errno ) << endl;
         exit(1);
@@ -191,7 +192,9 @@ int main(int argc, char **argv) {
     }
 
     // Information for the client.
-    cout << "JavaScript Remote Debugger Client connected to a remote debugger.\nWaiting for a list of JavaScript contexts being debugged.\nType \"help context\" for more information." << endl;
+    cout << "JavaScript Remote Debugger Client connected to a remote "\
+        "debugger.\nWaiting for a list of JavaScript contexts being " \
+        "debugged.\nType \"help context\" for more information." << endl;
 
     ApplicationCtxImpl ctx;
 

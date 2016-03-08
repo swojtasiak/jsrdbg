@@ -7,7 +7,12 @@ License:	GPLv2+
 URL:		https://github.com/swojtasiak/jsrdbg
 Source0:	https://github.com/swojtasiak/jsrdbg/archive/%{version}.tar.gz
 
-BuildRequires:	libtool,gettext,mozjs24-devel
+BuildRequires:	libtool
+BuildRequires:	gettext
+BuildRequires:	mozjs24-devel
+BuildRequires:	readline-devel
+BuildRequires:	gettext-devel
+BuildRequires:	gcc-c++
 Requires:	mozjs24
 
 %description

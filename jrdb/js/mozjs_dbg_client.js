@@ -180,7 +180,7 @@
         "step - Steps to a next instruction\n"+
         "next - Steps to a next instructions going through subroutines\n"+
         "continue - Continues execution of the program being debugged\n"+
-        "break,pause - Pauses the program being debugged or sets breakpoins\n"+
+        "break,pause - Pauses the program being debugged or sets breakpoints\n"+
         "delete - Deletes breakpoints\n"+
         "info - List information about program being debugged\n"+
         "list - Prints source code of the script being debugged\n"+
@@ -226,7 +226,7 @@
             }
             var contextId = context.getEnvInt( CV_CURRENT_CONTEXT_ID );
             if( contextId === undefined ) {
-                throw new Error( 'Current JavaScript context is not set or it not an integer value. Type "help context" for more information.' );
+                throw new Error( 'Current JavaScript context is not set or it is not an integer value. Type "help context" for more information.' );
             }
             return sendCommandCoreFn( contextId, command );
         };

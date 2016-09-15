@@ -261,7 +261,7 @@ pc - Prints information about current frame
 step - Steps to a next instruction
 next - Steps to a next instructions going through subroutines
 continue - Continues execution of the program being debugged
-break,pause - Pauses the program being debugged or sets breakpoins
+break,pause - Pauses the program being debugged or sets breakpoints
 delete - Deletes breakpoints
 info - List information about program being debugged
 list - Prints source code of the script being debugged
@@ -817,7 +817,7 @@ Standard parameters described above have been omitted intentionally.
     Description: Gets list of all handled JSContexts.
     Request: Plain string: get_available_contexts\n
     Response:
-        subtype  - 'source_code'
+        subtype  - 'contexts_list'
         contexts - Array of contexts.
             contextId - Numerical context ID.
             contextName - Context name, the same which has to be passed to the

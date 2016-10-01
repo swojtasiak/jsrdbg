@@ -57,8 +57,6 @@ bool GetoptConfigParser::parse( Configuration &configuration ) {
         int option_index = 0;
         int c;
 
-        int this_option_optind = optind ? optind : 1;
-
         static struct option long_options[] = {
             /* These options set a flag. */
             {"verbose", no_argument,       0,        'v'},

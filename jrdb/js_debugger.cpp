@@ -54,8 +54,6 @@ static JSBool JDB_fn_print_core( JSContext *cx, unsigned int argc, Value *vp, bo
         return JS_FALSE;
     }
 
-    CallArgs args = CallArgsFromVp(argc, vp);
-
     string string;
 
     MozJSUtils jsUtils(cx);
@@ -263,8 +261,6 @@ int JSDebugger::sendCtrlCommand( const string &command ) {
 
     JSAutoCompartment compartment(_cx,_global);
     JSAutoRequest request(_cx);
-
-    bool unicode = true;
 
     // Try to convert the source string to UTF-16LE,
     // just in order not to loss any multibyte characters.

@@ -112,7 +112,6 @@ void MainEventHandler::handle( IEvent *event ) {
     // Client has been disconnected.
     } else if( dynamic_cast<ClientDisconnectedEvent*>( event ) ) {
         ClientDisconnectedEvent *cde = dynamic_cast<ClientDisconnectedEvent*>( event );
-        int clientId = cde->getClientId();
         ReadLineEditor &editor = _ctx.getReadLineEditor();
         editor.hideEditor();
         if( cde->getReason() == JDB_ERROR_NO_ERROR || cde->getReason() == JDB_ERROR_FILE_DESCRIPTOR_CLOSED ) {

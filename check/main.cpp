@@ -68,15 +68,17 @@ extern char _binary_dbg_check_js_end[];
 /**
  * Prints function arguments into the console.
  */
-static JSBool JS_common_fn_print( JSContext *context, unsigned int argc, Value *vp ) {
+static JSBool JS_common_fn_print( JSContext *context, unsigned int argc,
+        Value *vp ) {
 
     CallArgs args = CallArgsFromVp(argc, vp);
 
     string val;
 
     MozJSUtils jsUtils(context);
-    if(!jsUtils.argsToString(argc, JS_ARGV(context, vp), val)) {
-        JS_ReportError( context, "JS_common_fn_print:: Cannot convert arguments to C string." );
+    if (!jsUtils.argsToString(args, val)) {
+        JS_ReportError(context, "JS_common_fn_print:: Cannot convert " \
+                "arguments to C string.");
         return JS_FALSE;
     }
 

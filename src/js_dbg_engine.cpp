@@ -81,20 +81,22 @@ namespace MozJS {
    /**
     * Prints function arguments into the console.
     */
-   static JSBool JSR_fn_print( JSContext *context, unsigned int argc, Value *vp ) {
-
-       if( argc == 0 ) {
-           JS_ReportError( context, "JSR_fn_print:: Bad args." );
-           return JS_FALSE;
-       }
+   static JSBool JSR_fn_print(JSContext *context, unsigned int argc,
+           Value *vp) {
 
        CallArgs args = CallArgsFromVp(argc, vp);
+
+       if (args.length() == 0) {
+           JS_ReportError(context, "JSR_fn_print:: Bad args.");
+           return JS_FALSE;
+       }
 
        string val;
 
        MozJSUtils jsUtils(context);
-       if(!jsUtils.argsToString(argc, JS_ARGV(context, vp), val)) {
-           JS_ReportError( context, "JSDebuggerEngine:: Cannot convert arguments to C string." );
+       if (!jsUtils.argsToString(args, val)) {
+           JS_ReportError(context, "JSDebuggerEngine:: Cannot convert " \
+                   "arguments to C string.");
            return JS_FALSE;
        }
 

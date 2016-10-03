@@ -60,8 +60,8 @@ public:
     bool fromString( const jstring &str, JS::MutableHandleString dest );
     bool fromUTF8( const std::string &str, JS::MutableHandleString dest );
     // Arguments interpretation.
-    bool argsToString(unsigned int argc, JS::Value *argv, std::string &out);
-    bool argsToString(unsigned int argc, JS::Value *argv, jstring &out);
+    bool argsToString(JS::CallArgs &args, std::string &out);
+    bool argsToString(JS::CallArgs &args, jstring &out);
     // Scripts evaluation.
     bool evaluateUtf8Script( JSObject *global, const std::string &script, const char *fileName, jsval *outRetval );
     bool evaluateScript( JSObject *global, const jstring &script, const char *fileName, jsval *outRetval );

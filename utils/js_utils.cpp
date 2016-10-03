@@ -178,26 +178,27 @@ bool MozJSUtils::fromUTF8( const std::string &str, JS::MutableHandleString dest 
 
 }
 
-bool MozJSUtils::argsToString(unsigned int argc, JS::Value *argv, std::string &out) {
+bool MozJSUtils::argsToString(CallArgs &args, std::string &out) {
 
     jstring jout;
 
-    if( !argsToString( argc, argv, jout ) ) {
+    if (!argsToString(args, jout)) {
         return false;
     }
 
     try {
         JCharEncoder encoder;
         out = encoder.wideToEnv(jout);
-    } catch( EncodingFailedException &exc ) {
-        LoggerFactory::getLogger().error( "MozJSUtils::argsToString - %s", exc.getMsg().c_str() );
+    } catch (EncodingFailedException &exc) {
+        LoggerFactory::getLogger().error("MozJSUtils::argsToString - %s",
+                exc.getMsg().c_str());
         return false;
     }
 
     return true;
 }
 
-bool MozJSUtils::argsToString(unsigned int argc, JS::Value *argv, jstring &out) {
+bool MozJSUtils::argsToString(CallArgs &args, jstring &out) {
 
     bool result = true;
 
@@ -212,7 +213,7 @@ bool MozJSUtils::argsToString(unsigned int argc, JS::Value *argv, jstring &out) 
         JCharEncoder encoder;
         jstring space = encoder.envToWide(" ");
 
-        for (int n = 0; n < argc; ++n) {
+        for (int n = 0; n < args.length(); ++n) {
 
             JSExceptionState *excState;
 
@@ -220,27 +221,30 @@ bool MozJSUtils::argsToString(unsigned int argc, JS::Value *argv, jstring &out) 
              * log that the value could be converted to string */
             ExceptionState state(_context);
 
-            RootedString jstr( _context, JS_ValueToString( _context, argv[n] ) );
+            RootedString jstr(_context, JS_ValueToString(_context, args[n]));
 
             state.restore();
 
             if (jstr) {
 
                 jstring s;
-                if( !toString(jstr, s) ) {
-                    LoggerFactory::getLogger().error( "MozJSUtils::argsToString - Cannot convert JSString into a jstring." );
+                if (!toString(jstr, s)) {
+                    LoggerFactory::getLogger().error(
+                            "MozJSUtils::argsToString - Cannot convert " \
+                            "JSString into a jstring.");
                     result = false;
                     break;
                 }
 
                 sb << s;
 
-                if (n < (argc - 1)) {
+                if (n < (args.length() - 1)) {
                     sb << jstring(space, 1);
                 }
 
             } else {
-                LoggerFactory::getLogger().error( "MozJSUtils::argsToString - JS_ValueToString failed." );
+                LoggerFactory::getLogger().error( "MozJSUtils::argsToString " \
+                        "- JS_ValueToString failed." );
                 result = false;
                 break;
             }
@@ -249,8 +253,9 @@ bool MozJSUtils::argsToString(unsigned int argc, JS::Value *argv, jstring &out) 
 
         out = sb.str();
 
-    } catch( EncodingFailedException &exc ) {
-        LoggerFactory::getLogger().error( "MozJSUtils::argsToString - %s", exc.getMsg().c_str() );
+    } catch(EncodingFailedException &exc) {
+        LoggerFactory::getLogger().error("MozJSUtils::argsToString - %s",
+                exc.getMsg().c_str());
         result = false;
     }
 
@@ -564,7 +569,7 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
 
    string moduleName;
    string modulePrefix;
-   if(!jsUtils.argsToString(argc, JS_ARGV(context, vp), moduleName)) {
+   if(!jsUtils.argsToString(args, moduleName)) {
        JS_ReportError( context, "JSR_fn_utils_require:: Cannot convert arguments to C string." );
        return JS_FALSE;
    }

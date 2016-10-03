@@ -46,29 +46,32 @@ static JSClass JS_DBG_Global = {
 };
 
 /* Prints arguments to the console. */
-static JSBool JDB_fn_print_core( JSContext *cx, unsigned int argc, Value *vp, bool endline ) {
+static JSBool JDB_fn_print_core(JSContext *cx, unsigned int argc, Value *vp,
+        bool endline) {
 
-    JSDebugger *dbg = static_cast<JSDebugger*>( JS_GetContextPrivate( cx ) );
-    if( !dbg ) {
+    JSDebugger *dbg = static_cast<JSDebugger*>(JS_GetContextPrivate(cx));
+    if (!dbg) {
         JS_ReportError( cx, "Debugger object not found." );
         return JS_FALSE;
     }
 
     string string;
 
+    CallArgs args = CallArgsFromVp(argc, vp);
+
     MozJSUtils jsUtils(cx);
 
-    if( !jsUtils.argsToString( argc, JS_ARGV(context, vp), string ) ) {
+    if (!jsUtils.argsToString(args, string)) {
         JS_ReportError( cx, "Cannot convert arguments to a string." );
         return JS_FALSE;
     }
 
-    if( endline ) {
+    if (endline) {
         string.append("\n");
     }
 
     DebuggerCtx &ctx = dbg->getContext();
-    ctx.print( string );
+    ctx.print(string);
 
     return JS_TRUE;
 }

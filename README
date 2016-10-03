@@ -246,7 +246,7 @@ pc - Prints information about current frame
 step - Steps to a next instruction
 next - Steps to a next instructions going through subroutines
 continue - Continues execution of the program being debugged
-break,pause - Pauses the program being debugged or sets breakpoins
+break,pause - Pauses the program being debugged or sets breakpoints
 delete - Deletes breakpoints
 info - List information about program being debugged
 list - Prints source code of the script being debugged

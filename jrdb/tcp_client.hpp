@@ -76,7 +76,7 @@ public:
     /**
      * Connects to the debugger. It allocated a new client object after connection.
      * If anything failed, internal error code is returned. Anyway every returned
-     * error has errno associated with it, so fell free to use errno to get error
+     * error has errno associated with it, so feel free to use errno to get error
      * description if function fails.
      * @param host Host or IP.
      * @param port Debugger port.

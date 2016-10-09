@@ -116,7 +116,8 @@ int TCPClient::getSocket() const {
     return _socket;
 }
 
-// Internal API, not need to be synchronized. Used only inside thread-safe methods.
+// Internal API, not need to be synchronized. Used only inside
+// thread-safe methods.
 bool TCPClient::handleBuffers() {
 
     // Handles read buffer.
@@ -124,29 +125,32 @@ bool TCPClient::handleBuffers() {
 
     const char **separators = COMMANDS_SEPARATORS;
 
-    while( *separators ) {
+    while (*separators) {
 
         const char *separator = *separators;
 
-        if( ( pos = _readBuffer.find( separator ) ) !=  string::npos ) {
+        if ((pos = _readBuffer.find(separator)) != string::npos) {
 
             // Adds received command into the queue of the commands
             // sent by the connected client.
-            string commandStr = _readBuffer.substr( 0, pos );
+            string commandStr = _readBuffer.substr(0, pos);
 
             // Check if there is context ID in the command string.
             int contextId = -1;
-            if( !Utils::MozJSUtils::splitCommand( commandStr, contextId, commandStr ) ) {
-                _log.error( "TCPClient::handleBuffers: Broken context ID: %s", commandStr.c_str() );
+            if (!Utils::MozJSUtils::splitCommand(commandStr, contextId,
+                    commandStr)) {
+                _log.error( "TCPClient::handleBuffers: Broken context ID: %s",
+                        commandStr.c_str() );
             }
 
             // It should be moved to some kind of protocol abstraction
             // in the future, which would be responsible for converting content
             // into a command.
-            Command command( getID(), contextId, commandStr );
+            Command command(getID(), contextId, commandStr);
             BlockingQueue<Command> &queue = getInQueue();
-            if( !queue.add( command ) ) {
-                // Just ignore the command, maybe next time. This operation cannot block.
+            if (!queue.add(command)) {
+                // Just ignore the command, maybe next time. This operation
+                // cannot block.
                 _log.warn("TCP queue for incoming commands is full.");
             } else {
                 _readBuffer = _readBuffer.substr( pos + strlen( separator ) );
@@ -163,14 +167,15 @@ bool TCPClient::handleBuffers() {
     // Handles write buffer.
     Command pendingCommand;
     BlockingQueue<Command> &queue = getOutQueue();
+
     // Take into account that the command is removed from the queue only
     // if it can be properly handled; otherwise it is left where it is.
-    while( queue.peek( pendingCommand ) ) {
+    while (queue.peek(pendingCommand)) {
 
         // Do not send unknown context ID.
         string commandRaw;
         int contextId = pendingCommand.getContextId();
-        if( contextId != -1 ) {
+        if (contextId != -1) {
             stringstream ss;
             ss << contextId << '/';
             ss << pendingCommand.getValue();
@@ -179,7 +184,8 @@ bool TCPClient::handleBuffers() {
             commandRaw = pendingCommand.getValue();
         }
 
-        if( ( commandRaw.size() + _writeBuffer.size() + JSR_TCP_DEFAULT_SEPARATOR_SIZE ) < _cfg.getTcpBufferSize() ) {
+        if ((commandRaw.size() + _writeBuffer.size() +
+                JSR_TCP_DEFAULT_SEPARATOR_SIZE ) < _cfg.getTcpBufferSize()) {
 
             _writeBuffer.append( commandRaw );
             _writeBuffer.append( JSR_TCP_DEFAULT_SEPARATOR );
@@ -189,8 +195,9 @@ bool TCPClient::handleBuffers() {
         } else {
 
             // Check if there is even a chance to send it later.
-            if( commandRaw.size() > _cfg.getTcpBufferSize() ) {
-                // Command is bigger than TCP buffer, so it cannot be sent, just ignore it.lll
+            if (commandRaw.size() > _cfg.getTcpBufferSize()) {
+                // Command is bigger than TCP buffer, so it cannot be sent,
+                // just ignore it.
                 _log.error("Command bigger than TCP buffer has been ignored.");
                 queue.popOnly();
             }

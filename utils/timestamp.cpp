@@ -20,6 +20,28 @@
 #include "timestamp.hpp"
 #include "time.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#include <stdint.h>
+
+namespace {
+    static_assert(2 * sizeof(DWORD) == sizeof(int64_t), "");
+    static const int CLOCK_REALTIME = 0;
+    // Quick and dirty implementation of clock_gettime(2) for Windows. We could
+    // switch to QueryPerformanceCounter if a higher resolution is needed.
+    int clock_gettime( int unused, timespec *tp ) {
+        (void)unused;
+
+        int64_t time;
+        GetSystemTimeAsFileTime( reinterpret_cast<FILETIME*>(&time) );
+        time -= 116444736000000000LL;    // Jan 1st 1601 -> Jan 1st 1970
+        tp->tv_sec  = time / 10000000LL;
+        tp->tv_nsec = time % 10000000LL * 100;
+        return 0;
+    }
+}
+#endif
+
 using namespace Utils;
 
 TimeStamp::TimeStamp() {

@@ -23,6 +23,13 @@
 #include <stdint.h>
 #include <time.h>
 
+#ifdef _WIN32
+struct timespec {
+    time_t  tv_sec;    // Seconds.
+    long    tv_nsec;   // Nanoseconds.
+};
+#endif
+
 namespace Utils {
 
 /**

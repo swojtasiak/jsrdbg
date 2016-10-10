@@ -20,6 +20,10 @@
 #ifndef SRC_THREADS_H_
 #define SRC_THREADS_H_
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 #include <queue>
 
 #include "utils.hpp"
@@ -59,7 +63,11 @@ public:
     void unlock();
 private:
     friend Condition;
+#ifdef _WIN32
+    CRITICAL_SECTION _criticalsect;
+#else
     pthread_mutex_t _mutex;
+#endif
 };
 
 /**
@@ -85,7 +93,11 @@ public:
     void wait( Mutex &mutex );
     bool wait( Mutex &mutex, int milis );
 private:
+#ifdef _WIN32
+    CONDITION_VARIABLE _condition;
+#else
     pthread_cond_t _condition;
+#endif
 };
 
 /**
@@ -127,8 +139,12 @@ private:
     bool _started;
     // Runnable used by the thread.
     Runnable &_runnable;
-    // Thread.
+    // Native thread.
+#ifdef _WIN32
+    HANDLE _threadh;
+#else
     pthread_t _thread;
+#endif
 };
 
 template<typename T>

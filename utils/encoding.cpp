@@ -18,17 +18,8 @@
  */
 
 #include "encoding.hpp"
-#include <langinfo.h>
 
 #include <string>
-#include <iostream>
-#include <sstream>
-#include <iconv.h>
-#include <errno.h>
-#include <limits.h>
-#include <string.h>
-
-#define MBS_ENC_LOCAL_ENCODING_BUFF_LEN         512
 
 using namespace Utils;
 

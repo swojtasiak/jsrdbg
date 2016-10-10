@@ -35,11 +35,11 @@ namespace Utils {
 
 class EncodingFailedException {
 public:
-    EncodingFailedException(const std::string msg);
+    EncodingFailedException(const std::string& msg);
     ~EncodingFailedException();
-    const std::string getMsg() const;
+    const std::string& getMsg() const;
 private:
-    const std::string _msg;
+    std::string _msg;
 };
 
 typedef std::basic_string<jschar> jstring;

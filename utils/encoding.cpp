@@ -30,16 +30,15 @@
 
 #define MBS_ENC_LOCAL_ENCODING_BUFF_LEN         512
 
-using namespace std;
 using namespace Utils;
 
-EncodingFailedException::EncodingFailedException( const string msg )
+EncodingFailedException::EncodingFailedException( const std::string& msg )
     : _msg(msg) {
 }
 
 EncodingFailedException::~EncodingFailedException() {
 }
 
-const std::string EncodingFailedException::getMsg() const {
+const std::string& EncodingFailedException::getMsg() const {
     return _msg;
 }

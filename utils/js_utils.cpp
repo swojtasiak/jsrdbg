@@ -27,7 +27,6 @@
 
 using namespace Utils;
 using namespace JS;
-using namespace std;
 
 #define RES_MANAGER_HOLDER "____resource_manager_holder"
 
@@ -262,7 +261,7 @@ bool MozJSUtils::argsToString(CallArgs &args, jstring &out) {
     return result;
 }
 
-bool MozJSUtils::evaluateUtf8Script( JSObject *global, const string &script, const char *fileName, jsval *outRetval ) {
+bool MozJSUtils::evaluateUtf8Script( JSObject *global, const std::string &script, const char *fileName, jsval *outRetval ) {
 
     jstring jscript;
     try {
@@ -332,7 +331,7 @@ bool MozJSUtils::evaluateScript( JSObject *global, const jstring &script, const 
 
     if ( JS_IsExceptionPending(_context) ) {
         MozJSUtils jsUtils(_context);
-        string msg = jsUtils.getPendingExceptionMessage();
+        std::string msg = jsUtils.getPendingExceptionMessage();
         LoggerFactory::getLogger().error( "evaluateScript:: Exception: %s.", msg.c_str() );
         _lastError = ERROR_EVALUATION_FAILED;
         return false;
@@ -362,7 +361,7 @@ namespace Utils {
         if( !data ) {
             return JS_FALSE;
         }
-        basic_string<jschar> *buffer = reinterpret_cast< basic_string<jschar>* >( data );
+        std::basic_string<jschar> *buffer = reinterpret_cast< std::basic_string<jschar>* >( data );
         buffer->append( buf, len );
         return JS_TRUE;
     }
@@ -371,7 +370,7 @@ namespace Utils {
 
 bool MozJSUtils::stringifyToUtf8( JS::Value value, std::string &result ) {
 
-    basic_string<jschar> stringifiedValue;
+    std::basic_string<jschar> stringifiedValue;
     if( !JS_Stringify( _context, &value, NULL, JS::NullHandleValue, &JSONCommandWriteCallback, &stringifiedValue ) ) {
         _lastError = ERROR_JS_STRINGIFY_FAILED;
         return false;
@@ -439,7 +438,7 @@ bool MozJSUtils::setPropertyStr( JS::HandleObject obj, const std::string &proper
 }
 
 std::string MozJSUtils::getPendingExceptionMessage() {
-    string message = "No message";
+    std::string message = "No message";
     Value exc;
     if( JS_GetPendingException(_context, &exc) ) {
         Value jsMessage;
@@ -460,7 +459,7 @@ std::string MozJSUtils::getPendingExceptionMessage() {
 }
 
 std::string MozJSUtils::getPendingExceptionStack() {
-    string message = "No stack";
+    std::string message = "No stack";
     Value exc;
     if( JS_GetPendingException(_context, &exc) ) {
         Value jsMessage;
@@ -496,9 +495,9 @@ bool MozJSUtils::splitCommand( const std::string &packet, int &contextId, std::s
     // Check if there is context ID in the command string.
     bool result = true;
     size_t sep = packet.find( '/' );
-    if( sep != string::npos ) {
+    if( sep != std::string::npos ) {
         size_t json = packet.find( '{' );
-        if( sep != string::npos && sep < json ) {
+        if( sep != std::string::npos && sep < json ) {
             char *end;
             contextId = static_cast<int>( strtol( packet.c_str(), &end, 10 ) );
             if( end != packet.c_str() + sep ) {
@@ -518,7 +517,7 @@ bool MozJSUtils::splitCommand( const std::string &packet, int &contextId, std::s
 }
 
 struct ResourceManagersHolder {
-    map<string, ResourceManager*> managers;
+    std::map<std::string, ResourceManager*> managers;
 };
 
 /**
@@ -546,7 +545,7 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
    // Anyway this solution is so generic that is should work as long
    // as JS_GetGlobalForObject is not obsoleted.
 
-   for( int i = 0; i < args.length() && global == NULL; i++ ) {
+   for( unsigned int i = 0; i < args.length() && global == NULL; i++ ) {
        Value arg = args.get(i);
        if( arg.isObject() ) {
            global = JS_GetGlobalForObject( context, &arg.toObject() );
@@ -567,15 +566,15 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
 
    MozJSUtils jsUtils(context);
 
-   string moduleName;
-   string modulePrefix;
+   std::string moduleName;
+   std::string modulePrefix;
    if(!jsUtils.argsToString(args, moduleName)) {
        JS_ReportError( context, "JSR_fn_utils_require:: Cannot convert arguments to C string." );
        return JS_FALSE;
    }
 
    size_t pos = moduleName.find_last_of( '/' );
-   if( pos != string::npos ) {
+   if( pos != std::string::npos ) {
        modulePrefix = moduleName.substr( 0, pos );
        moduleName = moduleName.substr( pos + 1 );
    }
@@ -588,7 +587,7 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
 
    ResourceManagersHolder *holder = reinterpret_cast<ResourceManagersHolder*>( JS_GetPrivate( &valRMHolder.toObject() ) );
 
-   map<string, ResourceManager*>::iterator it = holder->managers.find( modulePrefix );
+   std::map<std::string, ResourceManager*>::iterator it = holder->managers.find( modulePrefix );
    if( it != holder->managers.end() ) {
 
        ResourceManager *manager = it->second;
@@ -596,7 +595,7 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
        Resource const * resource = manager->getResource( moduleName );
        if( resource ) {
 
-           string moduleScript( reinterpret_cast<char*>( resource->addr ), resource->len );
+           std::string moduleScript( reinterpret_cast<char*>( resource->addr ), resource->len );
 
            Value module;
            if( !jsUtils.evaluateUtf8Script( global, moduleScript, moduleName.c_str(), &module ) ) {
@@ -646,7 +645,7 @@ static JSFunctionSpec JSR_EngineEnvironmentFuntions[] = {
     JS_FS_END
 };
 
-bool MozJSUtils::addResourceManager( JSObject *global, const string &prefix, ResourceManager &resourceManager ) {
+bool MozJSUtils::addResourceManager( JSObject *global, const std::string &prefix, ResourceManager &resourceManager ) {
 
     Value valRMHolder;
     if( !JS_GetProperty( _context, global, RES_MANAGER_HOLDER, &valRMHolder ) || !valRMHolder.isObject() ) {
@@ -660,7 +659,7 @@ bool MozJSUtils::addResourceManager( JSObject *global, const string &prefix, Res
         return false;
     }
 
-    managers->managers.insert( pair<string, ResourceManager*>( prefix, &resourceManager ) );
+    managers->managers.insert( std::pair<std::string, ResourceManager*>( prefix, &resourceManager ) );
 
     return true;
 }

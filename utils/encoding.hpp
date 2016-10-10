@@ -20,14 +20,20 @@
 #ifndef SRC_ENCODING_HPP_
 #define SRC_ENCODING_HPP_
 
-#include "jsapi.h"
-#include "jsdbgapi.h"
+#include <jsapi.h>
+#include <jsdbgapi.h>
 
 #include <string>
 #include <sstream>
 #include <errno.h>
+#ifdef _WIN32
+#include <locale.h>
+#define ICONV_CONST 
+#include "win-iconv/iconv.h"
+#else
 #include <iconv.h>
 #include <langinfo.h>
+#endif
 
 namespace Utils {
 
@@ -57,7 +63,11 @@ public:
      * UTF-16 encoding is used by default.
      */
     WideCharEncoder( const char *encoding = "UTF-16LE" ) {
+#ifdef _WIN32
+        _envCharSet = setlocale(LC_CTYPE, nullptr);
+#else
         _envCharSet = ::nl_langinfo(CODESET);
+#endif
         _wideCharSet = encoding;
     }
     virtual ~WideCharEncoder() {
@@ -170,7 +180,7 @@ protected:
             if( encodedReplacer.size() > 0 ) {
                 return encodedReplacer.c_str()[0];
             }
-        } catch( EncodingFailedException &exc ) {
+        } catch( EncodingFailedException & ) {
         }
         return 0;
     }

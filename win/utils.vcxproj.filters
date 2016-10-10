@@ -59,5 +59,8 @@
     <ClCompile Include="..\utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\utils\win-iconv\win_iconv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -51,13 +51,13 @@ void Runnable::interrupt() {
 
 /* Thread */
 
-void *JRS_Thread_Start_Routine( void *args ) {
+static void *JRS_Thread_Start_Routine( void *args ) {
     Runnable *runnable = static_cast<Runnable*>( args );
     if( runnable ) {
         try {
             runnable->run();
         } catch(...) {
-            // Runnable is responsible for exceptions handling, so
+            // Runnable is responsible for handling exceptions, so
             // we are ignoring everything that arrives here. It's not
             // the best way to handle it, but as a shared library without
             // any logging mechanism it's everything we can do here.

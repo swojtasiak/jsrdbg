@@ -77,7 +77,7 @@ bool Thread::isStarted() {
     return started;
 }
 
-#ifdef _POSIX_VERSION
+#ifdef __unix__
 
 static void *JRS_Thread_Start_Routine( void *args ) {
     Runnable *runnable = static_cast<Runnable*>( args );
@@ -195,7 +195,7 @@ void Thread::join() {
  * Reentrant mutex.
  */
 
-#ifdef _POSIX_VERSION
+#ifdef __unix__
 
 Mutex::Mutex() {
     pthread_mutexattr_t attr;
@@ -254,7 +254,7 @@ MutexLock::~MutexLock() {
  * Condition.
  */
 
-#ifdef _POSIX_VERSION
+#ifdef __unix__
 
 Condition::Condition() {
     pthread_cond_init( &_condition, NULL );

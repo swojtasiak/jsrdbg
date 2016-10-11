@@ -20,7 +20,7 @@
 #include "log.hpp"
 
 #include <stdarg.h>
-#if defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
+#ifdef __unix__
 #include <syslog.h>
 #endif
 #include <stdio.h>
@@ -41,7 +41,7 @@ Logger::~Logger() {
 
 /* Unix logger. */
 
-#if defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
+#ifdef __unix__
 
 class UnixLogger : public Logger {
 public:
@@ -196,10 +196,10 @@ private:
 
 Logger& LoggerFactory::getLogger() {
 
-#if defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
+#ifdef __unix__
     static UnixLogger log;
 #elif _WIN32
-	static FileLogger log;
+    static FileLogger log;
 #endif
     return log;
 }

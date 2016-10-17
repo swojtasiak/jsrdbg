@@ -75,7 +75,7 @@ public:
      * Creates client instance for a given ID.
      * @param id Client's ID.
      */
-    Client( int id );
+    explicit Client( int id );
     virtual ~Client();
 public:
     /**
@@ -205,7 +205,7 @@ private:
     // Handles the reference counting logic.
     class ClientWrapper {
     public:
-        ClientWrapper(Client *client);
+        explicit ClientWrapper(Client *client);
         ClientWrapper(const ClientWrapper &cpy);
         Client* getClient();
         void returnClient( Client *client );
@@ -236,7 +236,7 @@ protected:
 template<typename T>
 class ClientPtrHolder : public Utils::NonCopyable {
 public:
-    ClientPtrHolder( ClientManager &manager, int clientId = 0 )
+    explicit ClientPtrHolder( ClientManager &manager, int clientId = 0 )
         : _manager(manager) {
         _client = static_cast<T*>(manager.getClient(clientId));
     }

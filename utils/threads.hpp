@@ -351,7 +351,7 @@ public:
     int getCount() {
         int count;
         _mutex.lock();
-        count = _queue.size();
+        count = static_cast<int>(_queue.size());
         _mutex.unlock();
         return count;
     }

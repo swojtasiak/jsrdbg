@@ -214,8 +214,6 @@ bool MozJSUtils::argsToString(CallArgs &args, jstring &out) {
 
         for (int n = 0; n < args.length(); ++n) {
 
-            JSExceptionState *excState;
-
             /* JS_ValueToString might throw, in which we will only
              * log that the value could be converted to string */
             ExceptionState state(_context);
@@ -267,7 +265,7 @@ bool MozJSUtils::evaluateUtf8Script( JSObject *global, const std::string &script
     try {
         JCharEncoder encoder;
         jscript = encoder.utf8ToWide(script);
-    } catch( EncodingFailedException &exc ) {
+    } catch( EncodingFailedException & ) {
         _lastError = ERROR_CHAR_ENCODING_FAILED;
         return false;
     }
@@ -282,7 +280,7 @@ bool MozJSUtils::parseUtf8JSON(const std::string &str, JS::MutableHandleObject d
     try {
         JCharEncoder encoder;
         jcommand = encoder.utf8ToWide( str );
-    } catch( EncodingFailedException &exc ) {
+    } catch( EncodingFailedException & ) {
         _lastError = ERROR_CHAR_ENCODING_FAILED;
         return false;
     }
@@ -379,7 +377,7 @@ bool MozJSUtils::stringifyToUtf8( JS::Value value, std::string &result ) {
     try {
         JCharEncoder encoder;
         result = encoder.wideToUtf8( stringifiedValue );
-    } catch( EncodingFailedException &exc ) {
+    } catch( EncodingFailedException & ) {
         _lastError = ERROR_CHAR_ENCODING_FAILED;
         return false;
     }

@@ -322,7 +322,7 @@ int ClientManager::stop() {
 
 int ClientManager::getClientsCount() {
     MutexLock lock( _mutex );
-    int clients = _clients.size();
+    int clients = static_cast<int>(_clients.size());
     return clients;
 }
 

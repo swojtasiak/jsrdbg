@@ -177,7 +177,7 @@ namespace MozJS {
                args.rval().setNull();
            }
 
-       } catch( EncodingFailedException &exc ) {
+       } catch( EncodingFailedException & ) {
            log.error("JSR_fn_loadScript:: Encoding failed, cannot encode script to UTF-16.");
            JS_ReportError( cx, "Encoding failed, cannot encode script to UTF-16." );
            return JS_FALSE;
@@ -526,7 +526,7 @@ bool JSDebuggerEngine::sendCommand( int clientId, const std::string &command, De
 
         JS_RestoreExceptionState(_ctx, excState);
 
-    } catch( EncodingFailedException &exc ) {
+    } catch( EncodingFailedException & ) {
         // Probably out of memory or not supported encoding, wait for the next execution.
         _log.error("CommandAction:: Cannot convert incoming command to UTF-16.");
         result = false;

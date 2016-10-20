@@ -157,7 +157,7 @@ namespace MozJS {
                     }
 
 
-                } catch( InterruptionException &ex ) {
+                } catch( InterruptionException & ) {
                     // Loop has been interrupted.
                     result = false;
                 }

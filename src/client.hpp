@@ -174,7 +174,7 @@ public:
     virtual void returnClient( Client *client );
     /**
      * Call periodically in order to execute peding
-     * actions if there a re any.
+     * actions if there a are any.
      */
     virtual void periodicCleanup();
     /**
@@ -190,11 +190,11 @@ public:
      * Applies the given function to every client.
      */
     template <typename Function> void forEach(Function func) {
-        MutexLock lock(_mutex);
+        Utils::MutexLock lock(_mutex);
         std::for_each(begin(_clients), end(_clients),
-            [&](std::map<int,ClientWrapper>::value_type& val) {
+            [&](std::map<int, ClientWrapper>::value_type& val) {
                 Client* client = val.second.getClient();
-                OnScopeExit returnClient([&] { val.second.returnClient(client); });
+                Utils::OnScopeExit returnClient([&] { val.second.returnClient(client); });
                 func(client);
         });
     }

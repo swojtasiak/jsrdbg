@@ -22,6 +22,7 @@
 
 #include <string>
 #include <map>
+#include <algorithm>
 
 #include <utils.hpp>
 #include <threads.hpp>
@@ -185,6 +186,18 @@ public:
      * @return Number of clients.
      */
     virtual int getClientsCount();
+    /**
+     * Applies the given function to every client.
+     */
+    template <typename Function> void forEach(Function func) {
+        MutexLock lock(_mutex);
+        std::for_each(begin(_clients), end(_clients),
+            [&](std::map<int,ClientWrapper>::value_type& val) {
+                Client* client = val.second.getClient();
+                OnScopeExit returnClient([&] { val.second.returnClient(client); });
+                func(client);
+        });
+    }
 private:
     /**
      * Tries to remove client and marks it as

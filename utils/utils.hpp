@@ -20,11 +20,47 @@
 #ifndef SRC_UTILS_H_
 #define SRC_UTILS_H_
 
-#include <stdexcept>
 #include <stddef.h>
+#include <assert.h>
+
+#include <stdexcept>
 #include <vector>
+#include <functional>
 
 namespace Utils {
+
+/**
+ * Helper class for exception-safe code.
+ */
+class OnScopeExit final
+{
+public:
+    template <typename Function>
+    OnScopeExit(Function dtor) try
+        : _func(std::move(dtor)) {
+    } catch (std::exception&) {
+        dtor();
+    }
+
+    ~OnScopeExit() {
+        if (_func) {
+            try {
+                _func();
+            } catch (std::exception&) {
+                assert(false);
+            }
+        }
+    }
+
+    void release() { _func = nullptr; }
+
+private:
+    std::function<void(void)> _func;
+
+    OnScopeExit(); // n/a
+    OnScopeExit(const OnScopeExit&); // n/a
+    OnScopeExit& operator=(const OnScopeExit&); // n/a
+};
 
 /**
  * Base class for all events.

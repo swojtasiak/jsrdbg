@@ -36,6 +36,12 @@
     <ClInclude Include="..\utils\utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils_resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\js\utils_resources.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\utils\encoding.cpp">
@@ -62,5 +68,16 @@
     <ClCompile Include="..\utils\win-iconv\win_iconv.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\utils\js\utils_resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="utils.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\utils\js\moduleArgsParser.js" />
   </ItemGroup>
 </Project>

@@ -31,7 +31,11 @@
 #include <log.hpp>
 
 #include "protocol.hpp"
+#ifdef __unix__
 #include "tcp_protocol.hpp"
+#elif defined(_WIN32)
+#include "tcp_protocol_win32.hpp"
+#endif
 #include "js_remote_dbg.hpp"
 #include "client.hpp"
 
@@ -52,7 +56,11 @@ public:
         // Allows to create dedicated protocol for given configuration.
         switch( cfg.getProtocol() ) {
         case JSRemoteDebuggerCfg::PROTOCOL_TCP_IP:
+#ifdef __unix__
             return new TCPProtocol( clientManager, debugger, cfg );
+#elif defined(_WIN32)
+            return new TCPProtocolWin32( clientManager, debugger, cfg );
+#endif
         default:
             return NULL;
         }

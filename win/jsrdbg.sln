@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jsrdbg", "jsrdbg.vcxproj", "{A3141603-9266-4B9A-B382-A2CB62C86957}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C36632F-10EF-41EF-A724-6943B1E4E832} = {1C36632F-10EF-41EF-A724-6943B1E4E832}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utils", "utils.vcxproj", "{1C36632F-10EF-41EF-A724-6943B1E4E832}"
 EndProject

@@ -42,7 +42,10 @@
     <ClCompile Include="..\src\protocol.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tcp_protocol.cpp">
+    <ClCompile Include="..\src\tcp_protocol_win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\js\js_resources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,7 +68,10 @@
     <ClInclude Include="..\src\protocol.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tcp_protocol.hpp">
+    <ClInclude Include="..\src\tcp_protocol_win32.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\js\js_resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

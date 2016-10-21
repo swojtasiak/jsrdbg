@@ -383,7 +383,7 @@ int JSDebuggerEngine::install() {
     }
 
     // Load debugger bootstrap script.
-    ResourceManager &manager = GetResourceManager();
+    ResourceManager &manager = JSR::GetResourceManager();
 
     if( !jsUtils.addResourceManager( debuggerGlobal, "dbg", manager ) ) {
         _log.error( "JSDebuggerEngine::install: Cannot add ResourceManager." );

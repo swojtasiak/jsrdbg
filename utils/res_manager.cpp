@@ -66,6 +66,10 @@ Resource loadResourceWin32(const std::string& name) {
     HRSRC rc = FindResourceW(handle, widen(name).c_str(),
         // Type is always 101 for JavaScript source files
         MAKEINTRESOURCE(101));
+    if (rc == nullptr) {
+        auto errnum = GetLastError();
+        throw std::runtime_error("Failed loading resource: " + systemErrorString(errnum));
+    }
     HGLOBAL rcData = LoadResource(handle, rc);
     auto len = SizeofResource(handle, rc);
     auto addr = static_cast<void*>(LockResource(rcData));

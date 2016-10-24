@@ -32,6 +32,9 @@
     <ClCompile Include="..\src\tcp_protocol_win32.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\public\jsdbg_common.h" />
+    <ClInclude Include="..\public\jsldbg.h" />
+    <ClInclude Include="..\public\jsrdbg.h" />
     <ClInclude Include="..\src\client.hpp" />
     <ClInclude Include="..\src\debuggers.hpp" />
     <ClInclude Include="..\src\js\js_resources.hpp" />
@@ -110,7 +113,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\utils;..\public;$(MOZJS_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;JS_DEBUG;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>JSRDBG_EXPORTS;_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;JS_DEBUG;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4127;4100;4512;4800;4267;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -124,7 +127,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\utils;..\public;$(MOZJS_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;JS_DEBUG;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>JSRDBG_EXPORTS;_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;JS_DEBUG;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4127;4100;4512;4800;4267;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -140,7 +143,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\utils;..\public;$(MOZJS_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>JSRDBG_EXPORTS;_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4127;4100;4512;4800;4267;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -158,7 +161,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\utils;..\public;$(MOZJS_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>JSRDBG_EXPORTS;_CRT_SECURE_NO_WARNINGS;XP_WIN;WIN32;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4127;4100;4512;4800;4267;4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>

@@ -60,9 +60,19 @@
 #define JSR_ERROR_SM_CANNOT_SHUTDOWN_DEBUGGER           113
 #define JSR_ERROR_SM_CANNOT_REGISTER_MODULE_LOADER      114
 
+#ifdef _WIN32
+#ifdef JSRDBG_EXPORTS
+#define JSRDBG_API __declspec(dllexport)
+#else
+#define JSRDBG_API __declspec(dllimport)
+#endif
+#else
+#define JSRDBG_API
+#endif
+
 namespace JSR {
 
-class JSDbgEngineOptions {
+class JSRDBG_API JSDbgEngineOptions {
 public:
     JSDbgEngineOptions();
     ~JSDbgEngineOptions();

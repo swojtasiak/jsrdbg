@@ -74,5 +74,14 @@
     <ClInclude Include="..\src\js\js_resources.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\jsdbg_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\jsldbg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\jsrdbg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

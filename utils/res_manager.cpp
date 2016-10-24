@@ -61,11 +61,9 @@ Resource const *ResourceManager::getResource(const std::string& name) const {
 
 #ifdef _WIN32
 
-Resource loadResourceWin32(const std::string& name) {
-    HMODULE handle = GetModuleHandle(nullptr);
-    HRSRC rc = FindResourceW(handle, widen(name).c_str(),
-        // Type is always 101 for JavaScript source files
-        MAKEINTRESOURCE(101));
+Resource loadResourceWin32(int name) {
+    HMODULE handle = GetModuleHandle(L"jsrdbg");
+    HRSRC rc = FindResourceW(handle, MAKEINTRESOURCE(name), RT_RCDATA);
     if (rc == nullptr) {
         auto errnum = GetLastError();
         throw std::runtime_error("Failed loading resource: " + systemErrorString(errnum));

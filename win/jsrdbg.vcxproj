@@ -43,6 +43,14 @@
     <ClInclude Include="..\src\message_builder.hpp" />
     <ClInclude Include="..\src\protocol.hpp" />
     <ClInclude Include="..\src\tcp_protocol_win32.hpp" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="jsrdbg.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\js\module.js" />
+    <None Include="..\src\js\mozjs_dbg.js" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A3141603-9266-4B9A-B382-A2CB62C86957}</ProjectGuid>

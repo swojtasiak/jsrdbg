@@ -150,7 +150,6 @@
     <ClInclude Include="..\utils\threads.hpp" />
     <ClInclude Include="..\utils\timestamp.hpp" />
     <ClInclude Include="..\utils\utils.hpp" />
-    <ClInclude Include="utils_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\utils\encoding.cpp" />
@@ -162,12 +161,6 @@
     <ClCompile Include="..\utils\timestamp.cpp" />
     <ClCompile Include="..\utils\utils.cpp" />
     <ClCompile Include="..\utils\win-iconv\win_iconv.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="utils.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\utils\js\moduleArgsParser.js" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

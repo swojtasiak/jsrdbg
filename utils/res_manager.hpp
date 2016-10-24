@@ -72,7 +72,7 @@ private:
 /**
  * Windows-only helper function for loading JS resources.
  */
-Resource loadResourceWin32(const std::string& resourceName);
+Resource loadResourceWin32(int resourceName);
 #endif
 
 }

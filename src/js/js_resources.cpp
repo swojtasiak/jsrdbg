@@ -21,7 +21,9 @@
 
 using namespace Utils;
 
-#ifdef __unix__
+#ifdef _WIN32
+#include "..\win\resource.h"
+#else
 extern char _binary_mozjs_dbg_js_start[];
 extern char _binary_mozjs_dbg_js_end[];
 
@@ -46,8 +48,8 @@ ResourceManager &GetResourceManager() {
 #elif defined(_WIN32)
     static ResourceManager _jsrdbgResourceManager = [] () -> ResourceManager {
         ResourceManager mgr;
-        mgr.addResource("mozjs_dbg", loadResourceWin32("mozjs_dbg"));
-        mgr.addResource("module", loadResourceWin32("module"));
+        mgr.addResource("mozjs_dbg", loadResourceWin32(IDR_RCDATA1));
+        mgr.addResource("module", loadResourceWin32(IDR_RCDATA2));
         return mgr;
     }();
 #endif

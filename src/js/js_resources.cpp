@@ -48,8 +48,8 @@ ResourceManager &GetResourceManager() {
 #elif defined(_WIN32)
     static ResourceManager _jsrdbgResourceManager = [] () -> ResourceManager {
         ResourceManager mgr;
-        mgr.addResource("mozjs_dbg", loadResourceWin32(IDR_RCDATA1));
-        mgr.addResource("module", loadResourceWin32(IDR_RCDATA2));
+        mgr.addResource("module", loadResourceWin32(IDR_RCDATA1));
+        mgr.addResource("mozjs_dbg", loadResourceWin32(IDR_RCDATA2));
         return mgr;
     }();
 #endif

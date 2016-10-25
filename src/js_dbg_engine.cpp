@@ -554,7 +554,7 @@ int JSDebuggerEngine::registerDebuggee( const JS::HandleObject debuggee ) {
 
     // After registering the debuggee object it will be rooted by
     // the debugger itself, so it's not needed to root it here.
-    RootedValue wrappedDebuggeeValue( _ctx, ObjectValue( *debuggee ) );
+    RootedValue wrappedDebuggeeValue( _ctx, ObjectValue( *wrappedDebuggee ) );
     Value argv[] = { wrappedDebuggeeValue };
     Value result;
     if( !JS_CallFunctionName( _ctx, _debuggerModule, "addDebuggee", 1, argv, &result ) ) {

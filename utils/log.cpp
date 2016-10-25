@@ -190,7 +190,7 @@ private:
             priority = "ERROR";
             break;
         }
-        _out << priority << "|" << buffer << "\n";
+        _out << priority << "|" << buffer << "\n" << std::flush;
     }
 };
 

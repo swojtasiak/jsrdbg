@@ -535,9 +535,9 @@ bool JSDebuggerEngine::sendCommand( int clientId, const std::string &command, De
     return result;
 }
 
-int JSDebuggerEngine::registerDebuggee( const JS::HandleObject debuggee ) {
+int JSDebuggerEngine::registerDebuggee(const JS::HandleObject debuggee) {
 
-    if( !_debuggerModule ) {
+    if (!_debuggerModule) {
         return JSR_ERROR_SM_DEBUGGER_IS_NOT_INSTALLED;
     }
 
@@ -546,19 +546,22 @@ int JSDebuggerEngine::registerDebuggee( const JS::HandleObject debuggee ) {
     JSAutoCompartment cr(_ctx, _debuggerGlobal);
 
     // Pass debuggee into the debugger's compartment.
-    RootedObject wrappedDebuggee( _ctx, debuggee );
-    if( !JS_WrapObject( _ctx, wrappedDebuggee.address() ) ) {
-        _log.error( "JSDebuggerEngine::Cannot wrap JS object (JS_WrapObject failed)." );
+    RootedObject wrappedDebuggee(_ctx, debuggee);
+    if (!JS_WrapObject(_ctx, wrappedDebuggee.address())) {
+        _log.error( "JSDebuggerEngine::Cannot wrap JS object " \
+                "(JS_WrapObject failed).");
         return JSR_ERROR_SM_CANNOT_WRAP_OBJECT;
     }
 
     // After registering the debuggee object it will be rooted by
     // the debugger itself, so it's not needed to root it here.
-    RootedValue wrappedDebuggeeValue( _ctx, ObjectValue( *wrappedDebuggee ) );
+    RootedValue wrappedDebuggeeValue(_ctx, ObjectValue(*wrappedDebuggee));
     Value argv[] = { wrappedDebuggeeValue };
     Value result;
-    if( !JS_CallFunctionName( _ctx, _debuggerModule, "addDebuggee", 1, argv, &result ) ) {
-        _log.error( "JSDebuggerEngine::Cannot invoke 'addDebuggee' function (JS_CallFunctionName failed)." );
+    if (!JS_CallFunctionName(_ctx, _debuggerModule, "addDebuggee", 1, argv,
+                &result)) {
+        _log.error("JSDebuggerEngine::Cannot invoke 'addDebuggee' " \
+                "function (JS_CallFunctionName failed).");
         return JSR_ERROR_SM_CANNOT_REGISTER_DEBUGGEE;
     }
 
@@ -566,9 +569,9 @@ int JSDebuggerEngine::registerDebuggee( const JS::HandleObject debuggee ) {
 
 }
 
-int JSDebuggerEngine::unregisterDebuggee( const JS::HandleObject debuggee ) {
+int JSDebuggerEngine::unregisterDebuggee(const JS::HandleObject debuggee) {
 
-    if( !_debuggerModule ) {
+    if (!_debuggerModule) {
        return JSR_ERROR_SM_DEBUGGER_IS_NOT_INSTALLED;
     }
 
@@ -577,19 +580,22 @@ int JSDebuggerEngine::unregisterDebuggee( const JS::HandleObject debuggee ) {
     JSAutoCompartment cr(_ctx, _debuggerGlobal);
 
     // Pass debuggee into the debugger's compartment.
-    RootedObject wrappedDebuggee( _ctx, debuggee );
-    if( !JS_WrapObject( _ctx, wrappedDebuggee.address() ) ) {
-        _log.error( "JSDebuggerEngine::Cannot wrap JS object (JS_WrapObject failed)." );
+    RootedObject wrappedDebuggee(_ctx, debuggee);
+    if (!JS_WrapObject(_ctx, wrappedDebuggee.address())) {
+        _log.error( "JSDebuggerEngine::Cannot wrap JS object " \
+                "(JS_WrapObject failed).");
         return JSR_ERROR_SM_CANNOT_WRAP_OBJECT;
     }
 
     // After registering the debuggee object it will be rooted by
     // the debugger itself, so it's not needed to root it here.
-    RootedValue wrappedDebuggeeValue( _ctx, ObjectValue( *debuggee ) );
+    RootedValue wrappedDebuggeeValue(_ctx, ObjectValue(*wrappedDebuggee));
     Value argv[] = { wrappedDebuggeeValue };
     Value result;
-    if( !JS_CallFunctionName( _ctx, _debuggerModule, "removeDebuggee", 1, argv, &result ) ) {
-        _log.error( "JSDebuggerEngine::Cannot invoke 'removeDebuggee' function (JS_CallFunctionName failed)." );
+    if (!JS_CallFunctionName(_ctx, _debuggerModule, "removeDebuggee", 1,
+                argv, &result)) {
+        _log.error( "JSDebuggerEngine::Cannot invoke 'removeDebuggee' " \
+                "function (JS_CallFunctionName failed).");
         return JSR_ERROR_SM_CANNOT_REGISTER_DEBUGGEE;
     }
 

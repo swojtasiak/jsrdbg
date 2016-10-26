@@ -99,3 +99,7 @@ test-suite.log
 # Executable stack fix.
 fix/fixnostack
 
+# Vim
+*.swo
+*.swn
+

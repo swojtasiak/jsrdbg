@@ -45,9 +45,7 @@ Makefile.in
 # Created by https://www.gitignore.io
 
 ### Eclipse ###
-*.pydevproject
 .metadata
-.gradle
 bin/
 tmp/
 *.tmp
@@ -71,9 +69,6 @@ local.properties
 
 # PDT-specific
 .buildpath
-
-# sbteclipse plugin
-.target
 
 # TeXlipse plugin
 .texlipse

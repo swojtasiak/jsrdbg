@@ -64,7 +64,7 @@ public:
      */
     WideCharEncoder( const char *encoding = "UTF-16LE" ) {
 #ifdef _WIN32
-        _envCharSet = setlocale(LC_CTYPE, nullptr);
+        _envCharSet = "char";
 #else
         _envCharSet = ::nl_langinfo(CODESET);
 #endif

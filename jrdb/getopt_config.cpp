@@ -34,7 +34,7 @@ GetoptConfigParser::~GetoptConfigParser() {
 bool GetoptConfigParser::parse( Configuration &configuration ) {
 
     static const char help_message[] =
-            "Usage: jdb [OPTIONS]\n" \
+            "Usage: jrdb [OPTIONS]\n" \
             "Connects to a remote java script debugger.\n\n"
             "  -v,  --verbose          enable verbose output\n" \
             "  -p,  --port             remote TCP port\n" \
@@ -42,9 +42,9 @@ bool GetoptConfigParser::parse( Configuration &configuration ) {
             "       --help             display this help and exit\n\n" \
             "By default it tries to connect to 127.0.0.1 using port 8089.\n\n" \
             "Examples:\n" \
-            "  jdb --port=8080 --host=example.com   Connects to the debugger\n" \
-            "                                       exposed by example.com on\n" \
-            "                                       port 8080.\n\n" \
+            "  jrdb --port=8080 --host=example.com   Connects to the debugger\n" \
+            "                                        exposed by example.com on\n" \
+            "                                        port 8080.\n\n" \
             "Report bugs to: slawomir@wojtasiak.com\n" \
             "pkg home page: <https://github.com/swojtasiak/jsrdbg>\n";
 

@@ -212,7 +212,7 @@ bool MozJSUtils::argsToString(CallArgs &args, jstring &out) {
         JCharEncoder encoder;
         jstring space = encoder.envToWide(" ");
 
-        for (int n = 0; n < args.length(); ++n) {
+        for (size_t n = 0; n < args.length(); ++n) {
 
             /* JS_ValueToString might throw, in which we will only
              * log that the value could be converted to string */

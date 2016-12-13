@@ -279,7 +279,7 @@ int TCPClientWin32::recv() {
         }
         else {
             // Sanity check. Communication protocol doesn't allow zeroes.
-            size_t i;
+            int i;
             for( i = 0; i < bytes_received && buffer[i] != '\0'; i++ ) { }
             if( i != bytes_received ) {
                 // Malicious data, disconnect the client.

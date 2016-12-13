@@ -94,7 +94,7 @@ namespace JSR {
  ************/
 
 TCPClientWin32::TCPClientWin32( const JSRemoteDebuggerCfg &cfg, SOCKET clientSocket ) :
-        Client(clientSocket),
+        Client(static_cast<int>(clientSocket)),
         _log( LoggerFactory::getLogger() ),
         _socket(clientSocket),
         _closed(false),

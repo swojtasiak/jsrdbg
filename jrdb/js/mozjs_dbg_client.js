@@ -1083,7 +1083,7 @@
                 url: url
             };
         },
-        // Continues execution to the next breakpoint od 'debugger;' statement.
+        // Continues execution to the next breakpoint or 'debugger;' statement.
         getContinue: function() {
             return {
                 type: 'command',

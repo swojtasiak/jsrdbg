@@ -1471,6 +1471,23 @@
             },
 
             /**
+             * Terminates the debuggee.
+             */
+            'stop': {
+                needPause: true,
+                fn: function( ctx ) {
+                    var pc = ctx.debuggerMediator.getPC();
+                    var frame = pc.getFrame();
+                    frame.onStep = function () {
+                        // Returning null from this handler will explicitly
+                        // terminate debuggee execution.
+                        return null;
+                    };
+                    return HC_RES_CONTINUE;
+                }
+            },
+
+            /**
              * Sets a new breakpoint.
              */
             'set_breakpoint': {

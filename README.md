@@ -261,6 +261,7 @@ pc - Prints information about current frame
 step - Steps to a next instruction
 next - Steps to a next instructions going through subroutines
 continue - Continues execution of the program being debugged
+stop - Terminates a debuggee.
 break,pause - Pauses the program being debugged or sets breakpoints
 delete - Deletes breakpoints
 info - List information about program being debugged
@@ -599,6 +600,16 @@ Standard parameters described above have been omitted intentionally.
     Response: None.
     
     Req: {"type":"command","name":"continue"}
+
+    ----
+    
+    Name: stop
+    Description: Terminates a debuggee.
+    Request:
+        name - 'stop'
+    Response: None.
+    
+    Req: {"type":"command","name":"stop"}
     
     ----
     

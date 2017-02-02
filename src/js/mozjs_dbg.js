@@ -498,7 +498,7 @@
             state.location = currLoc;
                 
             if( pause ) {
-                // Remeber that we are in the context of mediator.
+                // Remember that we are in the context of mediator.
                 try {
                     mediator.pause( frame );
                 } catch( ex ) {
@@ -692,9 +692,9 @@
 
             }).bind(this);
           
-            // This is one time handler that is only responsible for
-            // suspending te debuggee as soon as possible and then it's
-            // removed.
+            // This is a one-time handler that is only responsible for
+            // suspending the debuggee as soon as possible and then it is
+            // removed immediately.
             if( env.options.suspended ) {
                 this._dbg.onEnterFrame = (function( frame ) {
                     this._dbg.onEnterFrame = undefined;
@@ -870,7 +870,7 @@
          */
         registerStateHandler: function( stateHandler ) {
         
-            // If we are paused in a frame which has been already poped
+            // If we are paused in a frame which has been already popped
             // out the older frame on the stack has higher precedence.
             var frame = this._storage.older;
         
@@ -1091,7 +1091,7 @@
         },
         
         /**
-         * Pauses the debuggee and waits for incomming commands.
+         * Pauses the debuggee and waits for incoming commands.
          */
         pause: function(frame, older, suspended) {
 
@@ -1167,7 +1167,7 @@
          * Handler for breakpoints.
          */
         _breakpointHandler: function( frame ) {
-            // The same reason as i case of 'debugger;' statement handler above.
+            // The same reason as in case of 'debugger;' statement handler above.
             if( frame.onStep ) {
                 return;
             }
@@ -1429,7 +1429,7 @@
             } else {
                 throw new DbgException( 'Unsupported state handler: ' + state, ERROR_CODE_UNKNOWN_COMMAND );
             }
-            // No matter which state handler has been choosen
+            // No matter which state handler has been chosen
             // they are designed to operate on frame and debugger
             // events, so we have to awake debugger.
             return HC_RES_CONTINUE;
@@ -1466,6 +1466,23 @@
             'continue': {
                 needPause: true,
                 fn: function( ctx ) {
+                    return HC_RES_CONTINUE;
+                }
+            },
+
+            /**
+             * Terminates the debuggee.
+             */
+            'stop': {
+                needPause: true,
+                fn: function( ctx ) {
+                    var pc = ctx.debuggerMediator.getPC();
+                    var frame = pc.getFrame();
+                    frame.onStep = function () {
+                        // Returning null from this handler will explicitly
+                        // terminate debuggee execution.
+                        return null;
+                    };
                     return HC_RES_CONTINUE;
                 }
             },
@@ -1768,7 +1785,7 @@
     };
 
     /*
-     * Tracks all scripts registered for all debuggee's.
+     * Tracks all scripts registered for all debuggees.
      */
 
     function SourceCode( url, sourceCode, source ) {
@@ -1804,7 +1821,7 @@
         },
         
         /**
-         * Gets al source lines as an array.
+         * Returns all source lines as an array.
          */
         getAllSourceLines: function() {
             return this._sourceCodeLines;

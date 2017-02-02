@@ -71,6 +71,11 @@
         "continue\n"+
         "c";
 
+    const HELP_STOP = ""+
+        "Terminates execution of program being debugged\n"+
+        "Usage:\n"+
+        "stop";
+
     const HELP_LIST = ""+
         "Lists number of source code lines starting from the\n"+
         "location where debuggee is paused. When run first time\n"+
@@ -806,6 +811,13 @@
                 }
             },
             {
+                alias: ['stop'],
+                help: HELP_STOP,
+                fn: function( command ) {
+                    env.sendCommand( protocolStrategy.getStop() );
+                }
+            },
+            {
                 alias: ['list','l'],
                 help: HELP_LIST,
                 fn: function( command ) {
@@ -1083,11 +1095,18 @@
                 url: url
             };
         },
-        // Continues execution to the next breakpoint od 'debugger;' statement.
+        // Continues execution to the next breakpoint or 'debugger;' statement.
         getContinue: function() {
             return {
                 type: 'command',
                 name: 'continue'
+            };
+        },
+        // Forcefully stops execution of debuggee.
+        getStop: function() {
+            return {
+                type: 'command',
+                name: 'stop'
             };
         },
         // Deletes all breakpoints.

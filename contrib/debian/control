@@ -1,0 +1,52 @@
+Source: jsrdbg
+Section: libs
+Priority: optional
+Maintainer: Marcel Schlitzer <marcel.schlitzer@gmail.com>
+XSBC-Original-Maintainer: Sławomir Wojtasiak <slawomir@wojtasiak.com>
+Build-Depends: debhelper (>=9),
+ autoconf,
+ libtool, 
+ gettext,
+ libmozjs-24-bin,
+ libmozjs-24-dev, 
+ libreadline-dev, 
+ gettext, 
+ gcc-5,
+ autotools-dev
+Standards-Version: 3.9.7
+Homepage: https://github.com/swojtasiak/jsrdbg
+
+Package: jsrdbg
+Architecture: any
+Depends: libjsrdbg0 (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
+Description: JavaScript Remote Debugger for SpiderMonkey
+ JSRDBG is an implementation of a high level debugging protocol for SpiderMonkey
+ engine which is available as a shared library. The library can be used to
+ integrate debugging facilities into an existing application leveraging
+ SpiderMonkey engine. There are several integration possibilities including
+ exposition of the high level debugger API locally directly to the application
+ and even exposing it to remote clients using full duplex TCP/IP communication.
+
+Package: libjsrdbg-dev
+Section: libdevel
+Architecture: any
+Depends: libjsrdbg0 (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
+Description: JavaScript Remote Debugger development utilities
+ JSRDBG is an implementation of a high level debugging protocol for SpiderMonkey
+ engine which is available as a shared library. The library can be used to
+ integrate debugging facilities into an existing application leveraging
+ SpiderMonkey engine. There are several integration possibilities including
+ exposition of the high level debugger API locally directly to the application
+ and even exposing it to remote clients using full duplex TCP/IP communication.
+
+Package: libjsrdbg0
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: JavaScript Remote Debugger library
+ JSRDBG is an implementation of a high level debugging protocol for SpiderMonkey
+ engine which is available as a shared library. The library can be used to
+ integrate debugging facilities into an existing application leveraging
+ SpiderMonkey engine. There are several integration possibilities including
+ exposition of the high level debugger API locally directly to the application
+ and even exposing it to remote clients using full duplex TCP/IP communication.

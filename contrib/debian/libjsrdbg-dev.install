@@ -1,0 +1,5 @@
+usr/include/jsrdbg/jsdbg_common.h
+usr/include/jsrdbg/jsldbg.h
+usr/include/jsrdbg/jsrdbg.h
+usr/lib/x86_64-linux-gnu/*.a
+usr/lib/x86_64-linux-gnu/pkgconfig/*.pc

@@ -29,6 +29,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -97,8 +98,16 @@ TCPClientWin32::TCPClientWin32( const JSRemoteDebuggerCfg &cfg, SOCKET clientSoc
         Client(static_cast<int>(clientSocket)),
         _log( LoggerFactory::getLogger() ),
         _socket(clientSocket),
+        _writeEvent(nullptr),
         _closed(false),
         _cfg(cfg) {
+
+    _writeEvent = WSACreateEvent();
+    if (_writeEvent == nullptr ) {
+        _log.error("TCPClientWin32::TCPClientWin32: failed to create event; error code %s",
+            systemErrorString(GetLastError()).c_str());
+    }
+
     // We are interested in new commands from debugger in order
     // to inform the server that there is something to send.
     getOutQueue().setSignalHandler(this);
@@ -107,6 +116,9 @@ TCPClientWin32::TCPClientWin32( const JSRemoteDebuggerCfg &cfg, SOCKET clientSoc
 TCPClientWin32::~TCPClientWin32() {
     // Just to be sure that socket is closed.
     closeSocket();
+    if (_writeEvent != nullptr) {
+        WSACloseEvent(_writeEvent);
+    }
 }
 
 // This method should be called by main protocol thread.
@@ -124,7 +136,7 @@ void TCPClientWin32::closeSocket() {
 }
 
 void TCPClientWin32::disconnect() {
-
+    closeSocket();
 }
 
 bool TCPClientWin32::isConnected() {
@@ -133,18 +145,20 @@ bool TCPClientWin32::isConnected() {
 }
 
 void TCPClientWin32::handle( BlockingQueue<Command> &queue, int signal ) {
-    // We need to send something to the client on the other side.
-    // Send information about something to write through
-    // the pipe which is scanned by main TCP thread.
-
-}
-
-// Internal API, not need to be synchronized. Used only inside thread-safe methods.
-void TCPClientWin32::sendCommand( uint8_t command, uint32_t args ) {
+    // We need to send something to the remote client.
+    // Signal main thread that we have something to write.
+    if (!WSASetEvent(_writeEvent)) {
+        _log.error("TCPClientWin32::handle: SetEvent failed; error code %s",
+            systemErrorString(GetLastError()).c_str());
+    }
 }
 
 SOCKET TCPClientWin32::getSocket() const {
     return _socket;
+}
+
+HANDLE TCPClientWin32::getWriteEvent() const {
+    return _writeEvent;
 }
 
 // Internal API, not need to be synchronized. Used only inside
@@ -285,9 +299,10 @@ int TCPClientWin32::recv() {
                 // Malicious data, disconnect the client.
                 return JSR_ERROR_CONNECTION_CLOSED;
             }
-            bytes_received = fillReadBuffer( buffer, 0, bytes_received );
-            if( bytes_received ) {
-                return bytes_received;
+
+            int error = fillReadBuffer( buffer, 0, bytes_received );
+            if( error ) {
+                return error;
             }
         }
     }
@@ -320,7 +335,7 @@ int TCPClientWin32::fillReadBuffer( char *buffer, int offset, size_t size ) {
 }
 
 // Sends data into the socket.
-// Internal API, not need to be synchronized. Used only inside thread-safe methods.
+// Internal API, no need to be synchronized. Used only inside thread-safe methods.
 int TCPClientWin32::send() {
 
     while( !_writeBuffer.empty() || handleBuffers() ) {
@@ -345,6 +360,10 @@ int TCPClientWin32::send() {
 
     return JSR_ERROR_NO_ERROR;
 }
+
+/************
+ * TCPServer
+ ************/
 
 TCPProtocolWin32::TCPProtocolWin32( ClientManager &clientManager, QueueSignalHandler<Command> &commandHandler, const JSRemoteDebuggerCfg &cfg) :
         _clientManager(clientManager),
@@ -385,19 +404,19 @@ void TCPProtocolWin32::run() {
         events.push_back( _stopEvent );
 
         // Loop indefinitely, waiting for remote connections or a stop signal
+        while( true ) {
 
-        bool running = true;
-        while( running ) {
-
-            DWORD ready = WSAWaitForMultipleEvents( events.size(), &events[0], false, INFINITE, false );
+            DWORD ready = WSAWaitForMultipleEvents( events.size(), &events[0], false, 5000, false );
 
             if ( ready == WSA_WAIT_FAILED ) {
                 _log.error("TCPProtocolWin32::run: wait failed with error: %d", ready);
-                running = false;
                 break;
             }
 
-            if ( ready == WSA_WAIT_EVENT_0 ) {
+            if ( ready == WSA_WAIT_TIMEOUT ) {
+                // Do nothing (for now)
+            }
+            else if ( ready == (WSA_WAIT_EVENT_0 + 0) ) {
 
                 // Some event on network. WSAEnumNetworkEvents resets the
                 // event object atomically for us, no need to reset manually
@@ -406,7 +425,6 @@ void TCPProtocolWin32::run() {
                 if ( WSAEnumNetworkEvents( _serverSocket, _networkEvent, &networkEvents ) == SOCKET_ERROR ) {
                     _log.error("TCPProtocolWin32::run: enumerating network events failed: %s", 
                         systemErrorString(WSAGetLastError()).c_str());
-                    running = false;
                     break;
                 }
 
@@ -414,7 +432,8 @@ void TCPProtocolWin32::run() {
                 if (flags & FD_ACCEPT) {
 
                     // Accept new connection.
-                    acceptClient();
+                    auto client = acceptClient();
+                    events.push_back(client->getWriteEvent());
 
                 }
                 else {
@@ -426,24 +445,52 @@ void TCPProtocolWin32::run() {
                         if (WSAEnumNetworkEvents(clientSocket, _networkEvent, &clientEvents) == SOCKET_ERROR) {
                             _log.error("TCPProtocolWin32::run: enumerating network events failed: %s", 
                                 systemErrorString(WSAGetLastError()).c_str());
-                            running = false;
                             return;
                         }
                         long clientFlags = clientEvents.lNetworkEvents;
                         if (clientFlags & FD_READ) {
+                            int rc = win32Client->recv();
+                            if( rc != JSR_ERROR_NO_ERROR ) {
+                                disposeClient(win32Client, events);
+                            }
                         }
                         else if (clientFlags & FD_WRITE) {
+                            int rc = win32Client->send();
+                            if( rc != JSR_ERROR_NO_ERROR ) {
+                                disposeClient(win32Client, events);
+                            }
                         }
                         else if (clientFlags & FD_CLOSE) {
+                            disposeClient(win32Client, events);
                         }
                     });
                 }
             }
-            else if ( ready == WSA_WAIT_EVENT_0 + 1 ) {
+            else if ( ready == (WSA_WAIT_EVENT_0 + 1) ) {
 
                 // Stop event.
-                running = false;
                 break;
+            }
+            else {
+
+                // A client signaled that it needs to send data.
+                const auto index = ready - WSA_WAIT_EVENT_0;
+
+                auto reset = WSAResetEvent(events[index]);
+                if (!reset) {
+                    _log.error("TCPProtocolWin32::run: WSAResetEvent failed with error %s",
+                        WSAGetLastError());
+                    break;
+                }
+
+                _clientManager.forEach([&](Client* client) {
+                    TCPClientWin32* win32Client = dynamic_cast<TCPClientWin32*>(client);
+                    assert(win32Client);
+                    const auto ev = win32Client->getWriteEvent();
+                    if (events[index] == ev) {
+                        int rc = win32Client->send();
+                    }
+                });
             }
 
             _clientManager.periodicCleanup();
@@ -475,7 +522,7 @@ void TCPProtocolWin32::run() {
 /**
  * Accepts newly connected client and adds the client to the clients manager.
  */
-void TCPProtocolWin32::acceptClient() {
+TCPClientWin32* TCPProtocolWin32::acceptClient() {
 
     SOCKADDR_IN clientName;
     memset( &clientName, 0, sizeof( clientName ) );
@@ -484,8 +531,9 @@ void TCPProtocolWin32::acceptClient() {
     SOCKET clientSocket = accept( _serverSocket, reinterpret_cast<SOCKADDR*>(&clientName), &size );
 
     if (clientSocket == INVALID_SOCKET) {
-        _log.error("TCPProtocolWin32::acceptClient: accept failed with error: %s", systemErrorString(WSAGetLastError()).c_str());
-        return;
+        _log.error("TCPProtocolWin32::acceptClient: accept failed with error: %s",
+            systemErrorString(WSAGetLastError()).c_str());
+        return nullptr;
     }
 
     // Connection accepted
@@ -494,14 +542,22 @@ void TCPProtocolWin32::acceptClient() {
     tcpClient->getInQueue().setSignalHandler( &_inCommandHandler );
 
     int retcode = _clientManager.addClient( tcpClient.get() );
-    if( retcode == JSR_ERROR_NO_ERROR) {
-        tcpClient.release();
-    }
-    else {
+    if( retcode != JSR_ERROR_NO_ERROR) {
+        _log.error("TCPProtocolWin32::acceptClient: couldn't add client to clientManager");
         closesocket(clientSocket);
+        return nullptr;
     }
+
+    return tcpClient.release();
 }
 
+void TCPProtocolWin32::disposeClient(TCPClientWin32* client, std::vector<WSAEVENT>& events) {
+    events.erase(
+        std::remove(begin(events), end(events), client->getWriteEvent()),
+        end(events));
+    client->disconnect();
+    _clientManager.removeClient(client);
+}
 
 void TCPProtocolWin32::interrupt() {
     SetEvent( _stopEvent );

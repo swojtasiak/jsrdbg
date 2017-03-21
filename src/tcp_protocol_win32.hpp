@@ -57,7 +57,7 @@ public:
     int recv();
 
     /**
-     * Sets pending data through the client socket.
+     * Sends pending data through the client socket.
      */
     int send();
 
@@ -78,6 +78,8 @@ public:
      */
     SOCKET getSocket() const;
 
+    HANDLE getWriteEvent() const;
+
     // Client.
     void disconnect();
     bool isConnected();
@@ -93,11 +95,6 @@ private:
     void handle( Utils::BlockingQueue<Command> &queue, int signal );
 
     /**
-     * Sends command through pipe.
-     */
-    void sendCommand( uint8_t command, uint32_t args );
-
-    /**
      * Adds bytes to client's read buffer.
      */
     int fillReadBuffer( char *buffer, int offset, size_t size );
@@ -109,6 +106,7 @@ private:
     std::string _writeBuffer;
     // Client socket.
     SOCKET _socket;
+    WSAEVENT _writeEvent;
     bool _closed;
     const JSRemoteDebuggerCfg &_cfg;
 };
@@ -134,7 +132,8 @@ private:
 
     void run();
     void interrupt();
-    void acceptClient();
+    TCPClientWin32* acceptClient();
+    void disposeClient(TCPClientWin32* client, std::vector<WSAEVENT>& events);
 
 private:
     Utils::Logger &_log;

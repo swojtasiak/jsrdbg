@@ -139,9 +139,12 @@ int ClientManager::addClient( Client *client ) {
         _log.error( "Cannot add NULL client." );
         return JSR_ERROR_ILLEGAL_ARGUMENT;
     }
-    _mutex.lock();
-    _clients.insert( std::pair<int,ClientWrapper>( client->getID(), ClientWrapper( client ) ) );
-    _mutex.unlock();
+
+    {
+        MutexLock lock( _mutex );
+        _clients.insert( std::pair<int,ClientWrapper>( client->getID(), ClientWrapper( client ) ) );
+    }
+
     ClientEvent event(EVENT_CODE_CLIENT_ADDED, client->getID());
     fire(event);
     return JSR_ERROR_NO_ERROR;
@@ -150,11 +153,15 @@ int ClientManager::addClient( Client *client ) {
 void ClientManager::broadcast( Command &command ) {
     vector<int> ids;
     // Collect all clients identificators.
-    _mutex.lock();
-    for( map<int,ClientWrapper>::iterator it = _clients.begin(); it != _clients.end(); it++ ) {
-        ids.push_back(it->first);
+
+    {
+        MutexLock lock( _mutex );
+
+        for( map<int,ClientWrapper>::iterator it = _clients.begin(); it != _clients.end(); it++ ) {
+            ids.push_back(it->first);
+        }
     }
-    _mutex.unlock();
+
     // Now having all identificators collected, try to send commands to clients
     // that are in conjunction with these identificators.
     for( vector<int>::iterator it = ids.begin(); it != ids.end(); it++ ) {
@@ -253,22 +260,26 @@ void ClientManager::returnClient( Client *client ) {
 void ClientManager::periodicCleanup() {
     // Vector of clients that were removed.
     vector<int> removedClients;
-    _mutex.lock();
-    // Remove client's as soon as they can be removed.
-    map<int,ClientWrapper>::iterator it = _clients.begin();
-    while (it != _clients.end()) {
-        if (it->second.isMarkedToRemove() && it->second.isRemovable()) {
-            int clientId = it->second.getClient()->getID();
-            it->second.deleteClient();
-            map<int,ClientWrapper>::iterator toErase = it;
-            ++it;
-            _clients.erase(toErase);
-            removedClients.push_back(clientId);
-        } else {
-           ++it;
+
+    {
+        MutexLock lock( _mutex );
+
+        // Remove client's as soon as they can be removed.
+        map<int,ClientWrapper>::iterator it = _clients.begin();
+        while (it != _clients.end()) {
+            if (it->second.isMarkedToRemove() && it->second.isRemovable()) {
+                int clientId = it->second.getClient()->getID();
+                it->second.deleteClient();
+                map<int,ClientWrapper>::iterator toErase = it;
+                ++it;
+                _clients.erase(toErase);
+                removedClients.push_back(clientId);
+            } else {
+                ++it;
+            }
         }
     }
-    _mutex.unlock();
+
     // Fire events about removed clients.
     for( vector<int>::iterator it = removedClients.begin(); it != removedClients.end(); it++ ) {
         ClientEvent event(EVENT_CODE_CLIENT_REMOVED, *it);
@@ -280,19 +291,24 @@ int ClientManager::stop() {
     // Try to close and delete all existing clients. If any of them are in use yet,
     // they will be marked as 'to be removed' and can be removed further by calls
     // to 'periodicCleanup' its why the error code is returned.
-    _mutex.lock();
-    map<int,ClientWrapper> clients = _clients;
+
     vector<int> removedClients;
-    for( map<int,ClientWrapper>::iterator it = clients.begin(); it != clients.end(); it++ ) {
-        int eventCode;
-        Client *client = it->second.getClient();
-        int clientId = client->getID();
-        if( tryRemoveClient( client, eventCode ) ) {
-            removedClients.push_back( clientId );
+    bool empty = true;
+    {
+        MutexLock lock( _mutex );
+
+        map<int,ClientWrapper> clients = _clients;
+        for( map<int,ClientWrapper>::iterator it = clients.begin(); it != clients.end(); it++ ) {
+            int eventCode;
+            Client *client = it->second.getClient();
+            int clientId = client->getID();
+            if( tryRemoveClient( client, eventCode ) ) {
+                removedClients.push_back( clientId );
+            }
         }
+        empty = _clients.empty();
     }
-    bool empty = _clients.empty();
-    _mutex.unlock();
+
     // Fire events about removed clients.
     for( vector<int>::iterator it = removedClients.begin(); it != removedClients.end(); it++ ) {
         ClientEvent event(EVENT_CODE_CLIENT_REMOVED, *it);

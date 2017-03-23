@@ -3,7 +3,7 @@ JavaScript Remote Debugger
 
 The following chapters describe some of the most important features of the project.
 
-##What it is for?
+## What it is for?
 
 This is an implementation of a high level debugging protocol for SpiderMonkey 
 engine which is available as a shared library. The library can be used to 
@@ -20,7 +20,7 @@ idea is similar to GNU debugger.
 Architecture, integration and remote client are described in the following
 chapters.
 
-##How to integrate
+## How to integrate
 
 There are plenty of ways how an application can be integrated with a 
 debugger, but the easier one is probably to integrate it with a remote debugger
@@ -549,7 +549,7 @@ Examples:
 "id":"95D892FEC352D9AF"}
 ```
 
-### Supported commands:
+### Supported commands
 
 Standard parameters described above have been omitted intentionally.
 

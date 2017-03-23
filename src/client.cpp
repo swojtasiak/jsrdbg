@@ -219,8 +219,8 @@ bool ClientManager::tryRemoveClient(Client *client, int &eventCode) {
             remove = true;
         }
         if( remove ) {
-            _clients.erase( it );
             wrapper.deleteClient();
+            _clients.erase( it );
             eventCode = EVENT_CODE_CLIENT_REMOVED;
         }
     }

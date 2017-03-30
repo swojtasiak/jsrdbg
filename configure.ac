@@ -15,6 +15,9 @@ AC_CONFIG_SRCDIR([src/jsrdbg.cpp])
 AC_PROG_CXX
 AC_PROG_CC
 
+# c++11
+AX_CXX_COMPILE_STDCXX_11(, mandatory)
+
 # objcopy is used to change the section of the JS files 
 # linked directly into the library. It is optional tool though.
 AC_CHECK_TOOL([OBJCOPY], [objcopy], [])

@@ -22,6 +22,7 @@
 
 #include <string>
 #include <map>
+#include <algorithm>
 
 #include <utils.hpp>
 #include <threads.hpp>
@@ -75,7 +76,7 @@ public:
      * Creates client instance for a given ID.
      * @param id Client's ID.
      */
-    Client( int id );
+    explicit Client( int id );
     virtual ~Client();
 public:
     /**
@@ -173,7 +174,7 @@ public:
     virtual void returnClient( Client *client );
     /**
      * Call periodically in order to execute peding
-     * actions if there a re any.
+     * actions if there a are any.
      */
     virtual void periodicCleanup();
     /**
@@ -185,6 +186,18 @@ public:
      * @return Number of clients.
      */
     virtual int getClientsCount();
+    /**
+     * Applies the given function to every client.
+     */
+    template <typename Function> void forEach(Function func) {
+        Utils::MutexLock lock(_mutex);
+        std::for_each(begin(_clients), end(_clients),
+            [&](std::map<int, ClientWrapper>::value_type& val) {
+                Client* client = val.second.getClient();
+                Utils::OnScopeExit returnClient([&] { val.second.returnClient(client); });
+                func(client);
+        });
+    }
 private:
     /**
      * Tries to remove client and marks it as
@@ -205,7 +218,7 @@ private:
     // Handles the reference counting logic.
     class ClientWrapper {
     public:
-        ClientWrapper(Client *client);
+        explicit ClientWrapper(Client *client);
         ClientWrapper(const ClientWrapper &cpy);
         Client* getClient();
         void returnClient( Client *client );
@@ -236,7 +249,7 @@ protected:
 template<typename T>
 class ClientPtrHolder : public Utils::NonCopyable {
 public:
-    ClientPtrHolder( ClientManager &manager, int clientId = 0 )
+    explicit ClientPtrHolder( ClientManager &manager, int clientId = 0 )
         : _manager(manager) {
         _client = static_cast<T*>(manager.getClient(clientId));
     }

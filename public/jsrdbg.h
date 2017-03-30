@@ -34,7 +34,7 @@ namespace JSR {
  * Base interface for components responsible
  * for providing scripts source code.
  */
-class IJSScriptLoader {
+class JSRDBG_API IJSScriptLoader {
 public:
     IJSScriptLoader();
     virtual ~IJSScriptLoader();
@@ -60,7 +60,7 @@ public:
 /**
  * Debugger configuration.
  */
-class JSRemoteDebuggerCfg {
+class JSRDBG_API JSRemoteDebuggerCfg {
 public:
 
     /* Type of the protocol used to connect with a debugger. */
@@ -166,7 +166,7 @@ private:
  * Base interface for debugger implementation. Destined
  * for internal use only.
  */
-class IJSRemoteDbg {
+class JSRDBG_API IJSRemoteDbg {
 public:
     IJSRemoteDbg();
     virtual ~IJSRemoteDbg();
@@ -183,7 +183,7 @@ public:
 /**
  * Remote JavaScript debugger.
  */
-class JSRemoteDebugger : public IJSRemoteDbg {
+class JSRDBG_API JSRemoteDebugger : public IJSRemoteDbg {
 public:
     JSRemoteDebugger();
     JSRemoteDebugger( const JSRemoteDebuggerCfg &cfg );

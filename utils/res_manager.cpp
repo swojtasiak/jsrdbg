@@ -18,9 +18,13 @@
  */
 
 #include "res_manager.hpp"
+#include "utils.hpp"
 
-using namespace Utils;
-using namespace std;
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+namespace Utils {
 
 ResourceManager::ResourceManager() {
 }
@@ -35,7 +39,7 @@ ResourceManager::ResourceManager(ResourceDef *defs) {
     }
 }
 
-void ResourceManager::addResource(const std::string name, void* addr, size_t len) {
+void ResourceManager::addResource(const std::string& name, void* addr, size_t len) {
     if ( addr ) {
         _resources.insert( resource_pair( name, Resource( addr, len ) ) );
     } else {
@@ -43,11 +47,34 @@ void ResourceManager::addResource(const std::string name, void* addr, size_t len
     }
 }
 
-Resource const *ResourceManager::getResource(const std::string name) const {
+void ResourceManager::addResource(const std::string& name, const Resource& resource) {
+    _resources.insert( resource_pair( name, resource ) );
+}
+
+Resource const *ResourceManager::getResource(const std::string& name) const {
     resource_map_const_iterator it = _resources.find( name );
     if ( it != _resources.end() ) {
         return &(it->second);
     }
     return NULL;
+}
+
+#ifdef _WIN32
+
+Resource loadResourceWin32(int name) {
+    HMODULE handle = GetModuleHandle(L"jsrdbg");
+    HRSRC rc = FindResourceW(handle, MAKEINTRESOURCE(name), RT_RCDATA);
+    if (rc == nullptr) {
+        auto errnum = GetLastError();
+        throw std::runtime_error("Failed loading resource: " + systemErrorString(errnum));
+    }
+    HGLOBAL rcData = LoadResource(handle, rc);
+    auto len = SizeofResource(handle, rc);
+    auto addr = static_cast<void*>(LockResource(rcData));
+    return Resource(addr, len);
+}
+
+#endif
+
 }
 

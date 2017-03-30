@@ -38,7 +38,7 @@ namespace JSR {
  * this simple interface. See js_debugger.cpp file for example
  * implementation.
  */
-class JSLocalDebugger {
+class JSRDBG_API JSLocalDebugger {
 public:
     /**
      * Creates a debugger instance for given context. Remember

@@ -57,15 +57,23 @@ typedef std::map<std::string, Resource>::const_iterator resource_map_const_itera
 
 class ResourceManager {
 public:
-    ResourceManager(ResourceDef *defs);
+    explicit ResourceManager(ResourceDef *defs);
     ResourceManager();
     virtual ~ResourceManager();
 public:
-    void addResource(const std::string name, void *addr, size_t len);
-    Resource const *getResource(const std::string name) const;
+    void addResource(const std::string& name, void *addr, size_t len);
+    void addResource(const std::string& name, const Resource& resource);
+    Resource const *getResource(const std::string& name) const;
 private:
     resource_map _resources;
 };
+
+#ifdef _WIN32
+/**
+ * Windows-only helper function for loading JS resources.
+ */
+Resource loadResourceWin32(int resourceName);
+#endif
 
 }
 

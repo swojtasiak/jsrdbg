@@ -18,28 +18,18 @@
  */
 
 #include "encoding.hpp"
-#include <langinfo.h>
 
 #include <string>
-#include <iostream>
-#include <sstream>
-#include <iconv.h>
-#include <errno.h>
-#include <limits.h>
-#include <string.h>
 
-#define MBS_ENC_LOCAL_ENCODING_BUFF_LEN         512
-
-using namespace std;
 using namespace Utils;
 
-EncodingFailedException::EncodingFailedException( const string msg )
+EncodingFailedException::EncodingFailedException( const std::string& msg )
     : _msg(msg) {
 }
 
 EncodingFailedException::~EncodingFailedException() {
 }
 
-const std::string EncodingFailedException::getMsg() const {
+const std::string& EncodingFailedException::getMsg() const {
     return _msg;
 }

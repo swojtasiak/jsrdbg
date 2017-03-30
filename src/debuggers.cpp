@@ -21,7 +21,7 @@
 
 #include <threads.hpp>
 #include <log.hpp>
-#include <client.hpp>
+#include "client.hpp"
 
 using namespace std;
 using namespace JS;

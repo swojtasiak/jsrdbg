@@ -17,7 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#ifdef _WIN32
+#include <process.h>    /* _beginthreadex, _endthreadex */
+#else
 #include <pthread.h>
+#endif
 #include <stdexcept>
 #include <time.h>
 #include <errno.h>
@@ -51,13 +55,37 @@ void Runnable::interrupt() {
 
 /* Thread */
 
-void *JRS_Thread_Start_Routine( void *args ) {
+Thread::Thread(Runnable &runnable)
+    : _runnable(runnable),
+      _started( false ) {
+}
+
+Thread::~Thread() {
+}
+
+void Thread::interrupt() {
+    if( isStarted() ) {
+        _runnable.interrupt();
+    }
+}
+
+bool Thread::isStarted() {
+    bool started = false;
+    _mutex.lock();
+    started = _started;
+    _mutex.unlock();
+    return started;
+}
+
+#ifdef __unix__
+
+static void *JRS_Thread_Start_Routine( void *args ) {
     Runnable *runnable = static_cast<Runnable*>( args );
     if( runnable ) {
         try {
             runnable->run();
         } catch(...) {
-            // Runnable is responsible for exceptions handling, so
+            // Runnable is responsible for handling exceptions, so
             // we are ignoring everything that arrives here. It's not
             // the best way to handle it, but as a shared library without
             // any logging mechanism it's everything we can do here.
@@ -65,14 +93,6 @@ void *JRS_Thread_Start_Routine( void *args ) {
     }
     // We are not interested in the result.
     pthread_exit(NULL);
-}
-
-Thread::Thread(Runnable &runnable)
-    : _runnable(runnable),
-      _started( false ) {
-}
-
-Thread::~Thread() {
 }
 
 void Thread::start() {
@@ -110,12 +130,6 @@ void Thread::start() {
     _mutex.unlock();
 }
 
-void Thread::interrupt() {
-    if( isStarted() ) {
-        _runnable.interrupt();
-    }
-}
-
 void Thread::join() {
     if( isStarted() ) {
         void *result;
@@ -123,13 +137,50 @@ void Thread::join() {
     }
 }
 
-bool Thread::isStarted() {
-    bool started = false;
-    _mutex.lock();
-    started = _started;
-    _mutex.unlock();
-    return started;
+#elif defined(_WIN32)
+
+static unsigned __stdcall JRS_Thread_Start_Routine( void *args ) {
+    Runnable *runnable = static_cast<Runnable*>( args );
+    if( runnable ) {
+        try {
+            runnable->run();
+        } catch(...) {
+            // Swallow everything. See comment in corresponding POSIX code.
+        }
+    }
+    // We never return an exit code here.
+    _endthreadex( 0 );
+    return 0;
 }
+
+void Thread::start() {
+
+    _mutex.lock();
+
+    if( _started ) {
+        _mutex.unlock();
+        throw runtime_error("Thread has been already started.");
+    }
+
+    _threadh = reinterpret_cast<HANDLE>(
+        _beginthreadex( nullptr, 0, &JRS_Thread_Start_Routine, &_runnable, 0, nullptr ));
+    if( !_threadh ) {
+        _mutex.unlock();
+        throw runtime_error("Cannot start thread.");
+    }
+
+    _started = true;
+
+    _mutex.unlock();
+}
+
+void Thread::join() {
+    if( isStarted() ) {
+        WaitForSingleObject( _threadh, INFINITE );
+    }
+}
+
+#endif
 
 /*
  * First of all - these synchronization primitives are fairly likely to fail, so
@@ -143,6 +194,8 @@ bool Thread::isStarted() {
 /**
  * Reentrant mutex.
  */
+
+#ifdef __unix__
 
 Mutex::Mutex() {
     pthread_mutexattr_t attr;
@@ -164,6 +217,26 @@ void Mutex::unlock() {
     pthread_mutex_unlock( &_mutex );
 }
 
+#elif defined(_WIN32)
+
+Mutex::Mutex() {
+    InitializeCriticalSection( &_criticalsect );
+}
+
+Mutex::~Mutex() {
+    DeleteCriticalSection( &_criticalsect );
+}
+
+void Mutex::lock() {
+    EnterCriticalSection( &_criticalsect );
+}
+
+void Mutex::unlock() {
+    LeaveCriticalSection( &_criticalsect );
+}
+
+#endif
+
 /**
  * Mutex locker.
  */
@@ -180,6 +253,8 @@ MutexLock::~MutexLock() {
 /**
  * Condition.
  */
+
+#ifdef __unix__
 
 Condition::Condition() {
     pthread_cond_init( &_condition, NULL );
@@ -205,3 +280,34 @@ bool Condition::wait( Mutex &mutex, int milis ) {
     TimeStamp ts = TimeStamp() + TimeStamp::ms( milis );
     return pthread_cond_timedwait( &_condition, &mutex._mutex, &ts.getTs() ) != ETIMEDOUT;
 }
+
+#elif defined(_WIN32)
+
+Condition::Condition() {
+    InitializeConditionVariable( &_condition );
+}
+
+Condition::~Condition() {
+}
+
+void Condition::signal() {
+    WakeConditionVariable( &_condition );
+}
+
+void Condition::broadcast() {
+    WakeAllConditionVariable( &_condition );
+}
+
+void Condition::wait( Mutex &mutex ) {
+    SleepConditionVariableCS( &_condition, &mutex._criticalsect, INFINITE );
+}
+
+bool Condition::wait( Mutex &mutex, int milis ) {
+    int retval = SleepConditionVariableCS( &_condition, &mutex._criticalsect, milis );
+    if ( retval == 0 ) {
+        return GetLastError() != ERROR_TIMEOUT;
+    }
+    return true;
+}
+
+#endif

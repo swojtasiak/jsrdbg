@@ -20,8 +20,13 @@
 #include "log.hpp"
 
 #include <stdarg.h>
+#ifdef __unix__
 #include <syslog.h>
+#endif
 #include <stdio.h>
+
+#include <string>
+#include <fstream>
 
 using namespace Utils;
 using namespace std;
@@ -35,6 +40,8 @@ Logger::~Logger() {
 }
 
 /* Unix logger. */
+
+#ifdef __unix__
 
 class UnixLogger : public Logger {
 public:
@@ -106,8 +113,94 @@ private:
     }
 };
 
+#endif
+
+/* File logger. */
+
+class FileLogger : public Logger {
+public:
+
+    FileLogger() {
+        const char *file_path = getenv("JSRDBG_LOG_FILE_PATH");
+        if (file_path) {
+            _out = std::ofstream(file_path, std::ofstream::out | std::ios::binary);
+        }
+    };
+
+    virtual ~FileLogger() {
+        _out.close();
+    }
+
+    enum Level {
+        INFO,
+        DEBUG,
+        WARN,
+        ERROR
+    };
+
+    void debug( const std::string log, ... ) {
+        va_list args;
+        va_start( args, log );
+        logMessage( DEBUG, log, args );
+        va_end( args );
+    }
+
+    void info( const std::string log, ... ) {
+        va_list args;
+        va_start( args, log );
+        logMessage( INFO, log, args );
+        va_end( args );
+    }
+
+    void warn( const std::string log, ... ) {
+        va_list args;
+        va_start( args, log );
+        logMessage( WARN, log, args );
+        va_end( args );
+    }
+
+    void error( const std::string log, ... ) {
+        va_list args;
+        va_start( args, log );
+        logMessage( ERROR, log, args );
+        va_end( args );
+    }
+
+private:
+    std::ofstream _out;
+
+    void logMessage( Level level, const string log, va_list args ) {
+        if (!_out.is_open()) {
+            return;
+        }
+        char buffer[1024];
+        vsnprintf( buffer, sizeof( buffer ), log.c_str(), args );
+        std::string priority;
+        switch ( level ) {
+        case DEBUG:
+            priority = "DEBUG";
+            break;
+        case INFO:
+            priority = "INFO";
+            break;
+        case WARN:
+            priority = "WARN";
+            break;
+        case ERROR:
+            priority = "ERROR";
+            break;
+        }
+        _out << priority << "|" << buffer << "\n" << std::flush;
+    }
+};
+
 Logger& LoggerFactory::getLogger() {
+
+#ifdef __unix__
     static UnixLogger log;
+#elif _WIN32
+    static FileLogger log;
+#endif
     return log;
 }
 

@@ -24,6 +24,36 @@ chapters.
 
 ### Linux
 
+#### Dependencies
+
+Besides a working C++ compiler you need a few additional dependencies to
+compile jsrdbg.
+
+On Fedora:
+```sh
+sudo dnf install \
+    autoconf \
+    autoconf-archive \
+    automake \
+    gettext-devel \
+    libtool \
+    mozjs24-devel \
+    readline-devel
+```
+
+On Ubuntu:
+```sh
+sudo apt-get install \
+    autoconf \
+    autoconf-archive \
+    build-essential \
+    gettext \
+    libmozjs-24-dev \
+    libreadline-dev \
+    libtool \
+    pkg-config
+```
+
 Note: If you haven't installed mozjs-24 with your distribution's package
 manager you probably have to tell pkg-config where to find the `mozjs-24.pc`
 file. You can do this by setting the `PKG_CONFIG_PATH` environment variable

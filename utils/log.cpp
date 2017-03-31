@@ -18,6 +18,7 @@
  */
 
 #include "log.hpp"
+#include "threads.hpp"
 
 #include <stdarg.h>
 #ifdef __unix__
@@ -120,7 +121,7 @@ private:
 class FileLogger : public Logger {
 public:
 
-    FileLogger() {
+    FileLogger() : _fstreamMutex(), _out() {
         const char *file_path = getenv("JSRDBG_LOG_FILE_PATH");
         if (file_path) {
             _out = std::ofstream(file_path, std::ofstream::out | std::ios::binary);
@@ -167,9 +168,12 @@ public:
     }
 
 private:
+    Mutex _fstreamMutex;
     std::ofstream _out;
 
     void logMessage( Level level, const string log, va_list args ) {
+        MutexLock lock(_fstreamMutex);
+
         if (!_out.is_open()) {
             return;
         }

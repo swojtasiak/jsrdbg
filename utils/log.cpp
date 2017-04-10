@@ -124,7 +124,7 @@ public:
     FileLogger() : _fstreamMutex(), _out() {
         const char *file_path = getenv("JSRDBG_LOG_FILE_PATH");
         if (file_path) {
-            _out = std::ofstream(file_path, std::ofstream::out | std::ios::binary);
+            _out.open(file_path, std::ofstream::out | std::ios::binary);
         }
     };
 

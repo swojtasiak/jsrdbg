@@ -18,6 +18,24 @@
  * (slawomir@wojtasiak.com) Evaluation related fixes
  * (slawomir@wojtasiak.com) Extended location tracking
  * (slawomir@wojtasiak.com) Host can be set to null while configuring TCP/IP
- * (slawomir@wojtasiak.com) Warnings are sent to clients if commands are not
- being handled on the fly.
+ * (slawomir@wojtasiak.com) Warnings are sent to clients if commands are not being handled on the fly.
 
+0.0.5 (17.04.2015)
+ * (slawomir@wojtasiak.com) Modules loader integrated with JRDB ResourceManager added to 'utils' shared library.
+ * (slawomir@wojtasiak.com) Runtime loadable modules.
+ * (slawomir@wojtasiak.com) Broken client version fixed.
+
+0.0.6 (28.04.2016)
+ * (benjamin.kircher@gmail.com) jrdb: add poor man's signal handling
+
+0.0.7 (20.04.2017)
+ * (benjamin.kircher@gmail.com) Win32 support.
+ * (benjamin.kircher@gmail.com) RPM spec.
+ * (benjamin.kircher@gmail.com) Fix compartment mismatch.
+ * (benjamin.kircher@gmail.com) Implement 'stop' command.
+ * (benjamin.kircher@gmail.com) Add CMake find script.
+ * (benjamin.kircher@gmail.com) Make mutex locking exception-safe
+ * (benjamin.kircher@gmail.com) Fix dangling referenceo
+ * (slawomir@wojtasiak.com) Some deprecated direct calls to argc, vp removed.
+ * (slawomir@wojtasiak.com) Bug fixes.
+ * (slawomir@wojtasiak.com) autoconf - c++11 is mandatory since Win32 support was added.

@@ -27,7 +27,9 @@ using namespace Utils;
 namespace JRDB {
 
 ResourceDef _utils_res_defs[] = {
-    { "mozjs_dbg_client", _binary_mozjs_dbg_client_js_start, _binary_mozjs_dbg_client_js_end - _binary_mozjs_dbg_client_js_start },
+    { "mozjs_dbg_client", _binary_mozjs_dbg_client_js_start,
+        static_cast<size_t>(_binary_mozjs_dbg_client_js_end -
+                _binary_mozjs_dbg_client_js_start) },
     RES_NULL
 };
 

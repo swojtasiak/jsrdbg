@@ -25,7 +25,9 @@ extern char _binary_moduleArgsParser_js_end[];
 namespace Utils {
 
 ResourceDef _utils_res_defs[] = {
-    { "argsParser", _binary_moduleArgsParser_js_start, _binary_moduleArgsParser_js_end - _binary_moduleArgsParser_js_start },
+    {"argsParser", _binary_moduleArgsParser_js_start, 
+        static_cast<size_t>(_binary_moduleArgsParser_js_end -
+                _binary_moduleArgsParser_js_start)},
     RES_NULL
 };
 

@@ -35,8 +35,11 @@ namespace JSR {
 
 #ifdef __unix__
 ResourceDef _jsrdbg_res_defs[] = {
-    { "mozjs_dbg", _binary_mozjs_dbg_js_start, _binary_mozjs_dbg_js_end - _binary_mozjs_dbg_js_start },
-    { "module", _binary_module_js_start, _binary_module_js_end - _binary_module_js_start },
+    {"mozjs_dbg",_binary_mozjs_dbg_js_start,
+        static_cast<size_t>(_binary_mozjs_dbg_js_end -
+            _binary_mozjs_dbg_js_start)},
+    {"module", _binary_module_js_start,
+        static_cast<size_t>(_binary_module_js_end - _binary_module_js_start)},
     RES_NULL
 };
 #endif

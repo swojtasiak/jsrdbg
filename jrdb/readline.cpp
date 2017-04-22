@@ -141,7 +141,9 @@ void ReadLine::dispose() {
 bool ReadLine::consume( IEvent *event ) {
     if( _JDB_eventHandler ) {
         _JDB_eventHandler->handle(event);
+	return true;
     }
+    return false;
 }
 
 void ReadLine::closeConsumer( int error ) {

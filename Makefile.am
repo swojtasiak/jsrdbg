@@ -17,5 +17,6 @@ EXTRA_DIST = example/AUTHORS \
 	example/src/js/example.js \
 	example/src/js/package.json \
 	example/src/main.cpp \
+	contrib/ \	
 	Commons.mk
 

@@ -1,6 +1,6 @@
 Name:		jsrdbg
-Version:	0.0.6
-Release:	3%{?dist}
+Version:	0.0.7
+Release:	1%{?dist}
 Summary:	JavaScript Remote Debugger for SpiderMonkey
 Group:		Development/Debuggers
 License:	LGPLv2+
@@ -50,6 +50,9 @@ autoreconf -i
 %configure
 make %{?_smp_mflags}
 
+%check
+make check
+
 %install
 %make_install DESTDIR=%{buildroot}
 
@@ -64,11 +67,17 @@ make %{?_smp_mflags}
 %{_libdir}/libjsrdbg.la
 %{_libdir}/libjsrdbg.so
 %{_libdir}/pkgconfig/libjsrdbg.pc
+%{_datadir}/cmake/Modules/FindJSRDBG.cmake
 
 %files -n jrdb
 %{_bindir}/jrdb
 
 %changelog
+* Sat Apr 22 2017 Benjamin Kircher <benjamin.kircher@gmail.com> 0.0.7-1
+- New upstream version
+- Install CMake find script
+- Add check section
+
 * Fri Dec 23 2016 Benjamin Kircher <kircher@otris.de> 0.0.6-3
 - Separate package for jrdb binary and other improvements
 

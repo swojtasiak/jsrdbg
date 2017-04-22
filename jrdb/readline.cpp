@@ -34,7 +34,7 @@ using namespace std;
 #  else /* !defined(HAVE_READLINE_H) */
 extern char *readline ();
 #  endif /* !defined(HAVE_READLINE_H) */
-char *cmdline = NULL;
+char *cmdline = nullptr;
 #else /* !defined(HAVE_READLINE_READLINE_H) */
   /* no readline */
 #endif /* HAVE_LIBREADLINE */
@@ -54,7 +54,7 @@ extern int read_history ();
 
 const char *prompt = "jrdb> ";
 
-IEventHandler *_JDB_eventHandler = NULL;
+IEventHandler *_JDB_eventHandler = nullptr;
 
 ReadLine *_JDB_consumer;
 
@@ -120,7 +120,7 @@ void ReadLine::unregisterReadline() {
     // Clear the current prompt and edited line, just to
     // not leave any garbages in the terminal.
     ::rl_callback_handler_remove();
-    _JDB_eventHandler = NULL;
+    _JDB_eventHandler = nullptr;
 }
 
 ReadLine &ReadLine::getInstance() {
@@ -133,7 +133,7 @@ ReadLine &ReadLine::getInstance() {
 void ReadLine::dispose() {
     if( _JDB_consumer ) {
         delete _JDB_consumer;
-        _JDB_consumer = NULL;
+        _JDB_consumer = nullptr;
     }
 }
 

@@ -45,13 +45,13 @@ namespace MozJS {
        JS_EnumerateStub,
        JS_ResolveStub,
        JS_ConvertStub,
-       NULL,
-       NULL,
-       NULL,
-       NULL,
-       NULL,
-       NULL,
-       { NULL }
+       nullptr,
+       nullptr,
+       nullptr,
+       nullptr,
+       nullptr,
+       nullptr,
+       { nullptr }
    };
 
    /**
@@ -300,10 +300,10 @@ JSDebuggerEngine::JSDebuggerEngine( JSEngineEventHandler &handler, JSContext *ct
     : _eventHandler(handler),
       _ctx(ctx),
       _contextId(contextId),
-      _debuggerModule(NULL),
-      _debuggerGlobal(NULL),
+      _debuggerModule(nullptr),
+      _debuggerGlobal(nullptr),
       _log(LoggerFactory::getLogger()),
-      _tag(NULL),
+      _tag(nullptr),
       _options(options) {
 }
 
@@ -325,7 +325,7 @@ int JSDebuggerEngine::install() {
     // Create a new compartment for the debugger instance.
     CompartmentOptions options;
     options.setVersion(JSVERSION_LATEST);
-    RootedObject debuggerGlobal( _ctx, JS_NewGlobalObject( _ctx, &MozJS::JSR_DebuggerEngineGlobalGlass, NULL, options ) );
+    RootedObject debuggerGlobal( _ctx, JS_NewGlobalObject( _ctx, &MozJS::JSR_DebuggerEngineGlobalGlass, nullptr, options ) );
     if( !debuggerGlobal ) {
        _log.error( "JSDebuggerEngine::install: Cannot create new JS global object (JS_NewGlobalObject failed)." );
        return JSR_ERROR_SM_CANNOT_CREATE_GLOBAL_OBJECT;
@@ -351,7 +351,7 @@ int JSDebuggerEngine::install() {
     }
 
     // Creates a new object for the "environment" property.
-    RootedObject env( _ctx, JS_NewObject( _ctx, NULL, NULL, NULL ) );
+    RootedObject env( _ctx, JS_NewObject( _ctx, nullptr, nullptr, nullptr ) );
     if( !env ) {
         _log.error( "JSDebuggerEngine::install: Cannot create new JS object (JS_NewObject failed)." );
         return JSR_ERROR_SM_CANNOT_CREATE_OBJECT;
@@ -399,7 +399,7 @@ int JSDebuggerEngine::install() {
     const string script = resource->toString();
 
     // Prepares 'engine.options' object.
-    RootedObject envOptions( _ctx, JS_NewObject( _ctx, NULL, NULL, NULL ) );
+    RootedObject envOptions( _ctx, JS_NewObject( _ctx, nullptr, nullptr, nullptr ) );
     if( envOptions ) {
         bool rs = false;
         rs |= !jsUtils.setPropertyBool( envOptions, "suspended", _options.isSuspended() );
@@ -453,24 +453,24 @@ int JSDebuggerEngine::uninstall() {
 
     // Executes "shutdown" methods of debugger module.
     Value result;
-    if( !JS_CallFunctionName( _ctx, _debuggerModule, "shutdown", 0, NULL, &result ) ) {
+    if( !JS_CallFunctionName( _ctx, _debuggerModule, "shutdown", 0, nullptr, &result ) ) {
         _log.error( "JSDebuggerEngine::Cannot invoke 'shutdown' function (JS_CallFunctionName failed)." );
         return JSR_ERROR_SM_CANNOT_SHUTDOWN_DEBUGGER;
     }
 
     if( _debuggerModule ) {
         JS_RemoveObjectRoot( _ctx, &_debuggerModule );
-        _debuggerModule = NULL;
+        _debuggerModule = nullptr;
     }
 
     if( _debuggerGlobal ) {
         JS_RemoveObjectRoot( _ctx, &_debuggerGlobal );
-        _debuggerGlobal = NULL;
+        _debuggerGlobal = nullptr;
     }
 
-    _env = NULL;
+    _env = nullptr;
 
-    setEngineForContext(_ctx, NULL);
+    setEngineForContext(_ctx, nullptr);
 
     return JSR_ERROR_NO_ERROR;
 
@@ -604,7 +604,7 @@ int JSDebuggerEngine::unregisterDebuggee(const JS::HandleObject debuggee) {
 }
 
 bool JSDebuggerEngine::isInstalled() const {
-    return _debuggerGlobal != NULL;
+    return _debuggerGlobal != nullptr;
 }
 
 JS::HandleObject JSDebuggerEngine::getEnv() const {
@@ -645,7 +645,7 @@ int JSDebuggerEngine::getContextId() const {
 
 JSDebuggerEngine *JSDebuggerEngine::getEngineForContext( JSContext *ctx ) {
     MutexLock lock(_mutex);
-    JSDebuggerEngine *engine = NULL;
+    JSDebuggerEngine *engine = nullptr;
     std::map<JSContext*,JSDebuggerEngine*>::iterator it = _ctxToEngine.find( ctx );
     if( it != _ctxToEngine.end() ) {
         engine = it->second;

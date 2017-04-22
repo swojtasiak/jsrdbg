@@ -52,13 +52,13 @@ static JSClass JSR_TestEngineGlobalGlass = { "JSRTestGlobal",
     JS_EnumerateStub,
     JS_ResolveStub,
     JS_ConvertStub,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    { NULL }
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    { nullptr }
 };
 
 // Test script embedded inside executable.
@@ -117,7 +117,7 @@ public:
             // Global object for test script.
             CompartmentOptions options;
             options.setVersion(JSVERSION_LATEST);
-            _globalTest = JS_NewGlobalObject( _cxTest, &JSR_TestEngineGlobalGlass, NULL, options );
+            _globalTest = JS_NewGlobalObject( _cxTest, &JSR_TestEngineGlobalGlass, nullptr, options );
             if( !_globalTest ) {
                 throw runtime_error( "Cannot create global object for test script." );
             }
@@ -391,7 +391,7 @@ static JSBool JSR_fn_test( JSContext *ctx, unsigned int argc, Value *vp ) {
     }
 
     // Creates a new object for the "environment" property.
-    RootedObject dbg( ctx, JS_NewObject( ctx, NULL, NULL, NULL ) );
+    RootedObject dbg( ctx, JS_NewObject( ctx, nullptr, nullptr, nullptr ) );
     if( !dbg ) {
         JS_ReportError( ctx, "JSR_fn_test:: Cannot create debugger script." );
         return JS_FALSE;
@@ -426,7 +426,7 @@ static JSBool JSR_fn_test( JSContext *ctx, unsigned int argc, Value *vp ) {
         JS_SetContextPrivate( ctx, &script );
 
         Value jsResult;
-        if( !JS_CallFunctionValue( ctx, NULL, args.get(1), 2, argv, &jsResult ) ) {
+        if( !JS_CallFunctionValue( ctx, nullptr, args.get(1), 2, argv, &jsResult ) ) {
             // Just pass it through.
             if( !JS_IsExceptionPending( ctx ) ) {
                 JS_ReportError( ctx, "JSR_fn_test:: Cannot invoke test callback function." );
@@ -474,7 +474,7 @@ int runTests( JSContext *cx ) {
         JS_InitStandardClasses(cx, global);
 
         // Creates a new object for the "environment" property.
-        RootedObject env( cx, JS_NewObject( cx, NULL, NULL, NULL ) );
+        RootedObject env( cx, JS_NewObject( cx, nullptr, nullptr, nullptr ) );
         if( !env ) {
             return INIT_ERROR;
         }

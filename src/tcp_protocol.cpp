@@ -51,7 +51,7 @@ namespace JSR {
     const char* COMMANDS_SEPARATORS[] = {
         "\r\n",
         "\n",
-        NULL
+        nullptr
     };
 
 }
@@ -364,7 +364,7 @@ void TCPProtocol::run() {
            // Prepare read_fds again, because it might has been cleared by the "select".
            read_fds = fds;
 
-           rc = ::select( fdmax + 1, &read_fds, &write_fds, NULL, NULL );
+           rc = ::select( fdmax + 1, &read_fds, &write_fds, nullptr, nullptr );
 
            if ( rc == -1 ) {
                if ( errno == EINTR ) {

@@ -42,7 +42,7 @@ ExceptionState::~ExceptionState() {
 void ExceptionState::restore() {
     if(_state) {
         JS_RestoreExceptionState( _context, _state );
-        _state = NULL;
+        _state = nullptr;
     }
 }
 
@@ -369,7 +369,7 @@ namespace Utils {
 bool MozJSUtils::stringifyToUtf8( JS::Value value, std::string &result ) {
 
     std::basic_string<jschar> stringifiedValue;
-    if( !JS_Stringify( _context, &value, NULL, JS::NullHandleValue, &JSONCommandWriteCallback, &stringifiedValue ) ) {
+    if( !JS_Stringify( _context, &value, nullptr, JS::NullHandleValue, &JSONCommandWriteCallback, &stringifiedValue ) ) {
         _lastError = ERROR_JS_STRINGIFY_FAILED;
         return false;
     }
@@ -530,7 +530,7 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
 
    CallArgs args = CallArgsFromVp(argc, vp);
 
-   JSObject *global = NULL;
+   JSObject *global = nullptr;
 
 #if MOZJS_VERSION == 24
    // Bear in mind that this method is obsolete since JSAPI 25.
@@ -543,7 +543,7 @@ static JSBool JSR_fn_utils_require( JSContext *context, unsigned int argc, Value
    // Anyway this solution is so generic that is should work as long
    // as JS_GetGlobalForObject is not obsoleted.
 
-   for( unsigned int i = 0; i < args.length() && global == NULL; i++ ) {
+   for( unsigned int i = 0; i < args.length() && global == nullptr; i++ ) {
        Value arg = args.get(i);
        if( arg.isObject() ) {
            global = JS_GetGlobalForObject( context, &arg.toObject() );
@@ -630,12 +630,12 @@ static JSClass JSR_PTR_Holder = { "JSR_Utils_PTR_Holder",
     JS_ResolveStub,
     JS_ConvertStub,
     JSManagers_FinalizeOp,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    { NULL }
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    { nullptr }
 };
 
 static JSFunctionSpec JSR_EngineEnvironmentFuntions[] = {
@@ -671,8 +671,8 @@ bool MozJSUtils::registerModuleLoader( JSObject *global ) {
 
     // Store resource manager pointer for future usage.
 
-    JSObject *holder = JS_NewObject( _context, &JSR_PTR_Holder, NULL, NULL );
-    if ( holder == NULL ) {
+    JSObject *holder = JS_NewObject( _context, &JSR_PTR_Holder, nullptr, nullptr );
+    if ( holder == nullptr ) {
         LoggerFactory::getLogger().error( "JSDebuggerEngine::registerModuleLoader: Cannot define 'require' function." );
         return false ;
     }

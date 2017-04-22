@@ -48,7 +48,7 @@ struct Resource {
     size_t len;
 };
 
-#define RES_NULL        { "", NULL, 0 }
+#define RES_NULL        { "", nullptr, 0 }
 
 typedef std::pair<std::string, Resource> resource_pair;
 typedef std::map<std::string, Resource> resource_map;

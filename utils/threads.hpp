@@ -173,7 +173,7 @@ public:
     BlockingQueue( int max = -1 ) :
         _max(max),
         _interrupt(false),
-        _signalHandler(NULL) {
+        _signalHandler(nullptr) {
     }
 
     BlockingQueue(const BlockingQueue &queue)

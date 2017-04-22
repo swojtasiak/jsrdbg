@@ -240,7 +240,7 @@ Client* ClientManager::getClient( int id ) {
     if( it != _clients.end() ) {
         return it->second.getClient();
     }
-    return NULL;
+    return nullptr;
 }
 
 void ClientManager::returnClient( Client *client ) {
@@ -365,5 +365,5 @@ bool ClientManager::ClientWrapper::isMarkedToRemove() {
 
 void ClientManager::ClientWrapper::deleteClient() {
     delete client;
-    client = NULL;
+    client = nullptr;
 }

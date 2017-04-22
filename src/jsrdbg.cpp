@@ -62,7 +62,7 @@ public:
             return new TCPProtocolWin32( clientManager, debugger, cfg );
 #endif
         default:
-            return NULL;
+            return nullptr;
         }
     }
 };
@@ -72,7 +72,7 @@ class JSRemoteDebuggerImpl : public IJSRemoteDbg {
 public:
 
     JSRemoteDebuggerImpl( const JSRemoteDebuggerCfg &cfg )
-        : _protocol( NULL ),
+        : _protocol( nullptr ),
           _cfg( cfg ),
           _log( LoggerFactory::getLogger() ) {
 
@@ -158,7 +158,7 @@ public:
         error = _protocol->stopProtocol();
         if( !error ) {
             delete _protocol;
-            _protocol = NULL;
+            _protocol = nullptr;
         } else {
             _log.error( "Cannot stop debugger %d.", error );
         }
@@ -239,7 +239,7 @@ JSRemoteDebuggerCfg::JSRemoteDebuggerCfg( JSRProtocolType protocol, int tcpPort,
       _tcpPort( tcpPort ),
       _tcpBufferSize( tcpBufferSize ),
       _protocol(protocol),
-      _scriptLoader(NULL) {
+      _scriptLoader(nullptr) {
 }
 
 JSRemoteDebuggerCfg::JSRemoteDebuggerCfg( const JSRemoteDebuggerCfg &cpy ) {
@@ -277,7 +277,7 @@ const std::string& JSRemoteDebuggerCfg::getTcpHost() const {
 }
 
 void JSRemoteDebuggerCfg::setTcpHost(const char* tcpHost) {
-    if( tcpHost != NULL ) {
+    if( tcpHost != nullptr ) {
         _tcpHost = tcpHost;
     } else {
         _tcpHost = "";

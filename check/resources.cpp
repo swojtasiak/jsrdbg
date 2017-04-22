@@ -46,7 +46,7 @@ std::string Resources::createResource( const char *start, const char *end ) {
 
 std::string *Resources::getStringResource( const std::string key ) {
 
-    std::string *result = NULL;
+    std::string *result = nullptr;
 
     if( _resources.empty() ) {
         _resources.insert( resource_pair( "ts_simple_calculations.js", TEST_RC( ts_simple_calculations_js ) ) );

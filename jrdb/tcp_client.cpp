@@ -57,7 +57,7 @@ int ClientDisconnectedEvent::getReason() {
 
 TCPClient::TCPClient( int socket )
     : _socket( socket),
-      _eventHandler(NULL) {
+      _eventHandler(nullptr) {
 }
 
 TCPClient::~TCPClient() {
@@ -108,7 +108,7 @@ int TCPClient::handleBuffer() {
 
 IEvent *TCPClient::produce() {
     // Not used, everything is placed inside 'prepareBuffer'.
-    return NULL;
+    return nullptr;
 }
 
 void TCPClient::closeProducer( int error ) {

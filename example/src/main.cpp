@@ -74,7 +74,7 @@ JSBool JS_fn_print( JSContext *cx, unsigned int argc, Value *vp ) {
 
 static JSFunctionSpec JDB_Funcs[] = {
    { "print", JSOP_WRAPPER ( JS_fn_print ), 0, JSPROP_PERMANENT | JSPROP_ENUMERATE },
-   { NULL },
+   { nullptr },
 };
 
 // Component responsible for loading script's source code if the JS engine cannot provide it.

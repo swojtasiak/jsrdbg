@@ -157,7 +157,7 @@ private:
 template<typename T>
 class AutoPtr {
 public:
-    AutoPtr( T* ptr = NULL ) : _ptr(ptr) {
+    AutoPtr( T* ptr = nullptr ) : _ptr(ptr) {
     }
     ~AutoPtr() {
         if( _ptr ) {
@@ -186,7 +186,7 @@ public:
         return _ptr;
     }
     operator bool() {
-        return _ptr != NULL;
+        return _ptr != nullptr;
     }
     operator T*() {
         return _ptr;
@@ -195,16 +195,16 @@ public:
         return *_ptr;
     }
     void reset() {
-        _ptr = NULL;
+        _ptr = nullptr;
     }
     T* get() {
         return _ptr;
     }
     T* release() {
-        T *tmp = NULL;
+        T *tmp = nullptr;
         if( _ptr ) {
             tmp = _ptr;
-            _ptr = NULL;
+            _ptr = nullptr;
         }
         return tmp;
     }

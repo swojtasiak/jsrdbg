@@ -272,12 +272,12 @@ public:
         return static_cast<T*>(_client);
     }
     operator bool() {
-        return _client != NULL;
+        return _client != nullptr;
     }
     void release() {
         if( _client ) {
             _manager.returnClient( _client );
-            _client = NULL;
+            _client = nullptr;
         }
     }
 private:

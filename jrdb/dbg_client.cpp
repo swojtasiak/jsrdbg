@@ -28,7 +28,7 @@ using namespace std;
 using namespace Utils;
 
 AsyncCommandConsoleDriver::AsyncCommandConsoleDriver() {
-    _editor = NULL;
+    _editor = nullptr;
 }
 
 AsyncCommandConsoleDriver::~AsyncCommandConsoleDriver() {

@@ -93,7 +93,7 @@ int FSEventLoop::loop() {
             }
         }
 
-        rc = select( fdmax + 1, &read_fds, &write_fds, NULL, NULL );
+        rc = select( fdmax + 1, &read_fds, &write_fds, nullptr, nullptr );
 
         if ( rc == -1 ) {
             if ( errno == EINTR ) {

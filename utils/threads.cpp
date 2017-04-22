@@ -92,7 +92,7 @@ static void *JRS_Thread_Start_Routine( void *args ) {
         }
     }
     // We are not interested in the result.
-    pthread_exit(NULL);
+    pthread_exit(nullptr);
 }
 
 void Thread::start() {
@@ -257,7 +257,7 @@ MutexLock::~MutexLock() {
 #ifdef __unix__
 
 Condition::Condition() {
-    pthread_cond_init( &_condition, NULL );
+    pthread_cond_init( &_condition, nullptr );
 }
 
 Condition::~Condition() {

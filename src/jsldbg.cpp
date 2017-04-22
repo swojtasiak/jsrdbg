@@ -95,7 +95,7 @@ bool JSLocalDebugger::sendCommand( const std::string &command, DebuggerStateHint
 
 int JSLocalDebugger::loadScript( const std::string &file, std::string &outScript ) {
     JSLocalDebuggerImpl *impl = static_cast<JSLocalDebuggerImpl*>(_impl);
-    return impl->loadScript( NULL, file, outScript );
+    return impl->loadScript( nullptr, file, outScript );
 }
 
 JSContext *JSLocalDebugger::getCtx() {

@@ -63,9 +63,9 @@ private:
 class ApplicationCtxImpl : public ApplicationCtx {
 public:
     ApplicationCtxImpl()
-        : _mainLoop(NULL),
-          _readLine(NULL),
-          _debugger(NULL) {
+        : _mainLoop(nullptr),
+          _readLine(nullptr),
+          _debugger(nullptr) {
     };
     ~ApplicationCtxImpl() {
     };
@@ -101,7 +101,7 @@ public:
     DebuggerCtxImpl( ReadLineEditor &readLine, TCPClient &client )
         : _readLine(readLine),
           _client(client),
-          _consoleDriver(NULL) {
+          _consoleDriver(nullptr) {
     }
     ~DebuggerCtxImpl() {
     }
@@ -133,7 +133,7 @@ public:
         if( _consoleDriver ) {
             _consoleDriver->restoreConsole();
             delete _consoleDriver;
-            _consoleDriver = NULL;
+            _consoleDriver = nullptr;
         }
     }
 private:
@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
     sa.sa_handler = signal_handler;
-    if (sigaction(SIGINT, &sa, NULL)) {
+    if (sigaction(SIGINT, &sa, nullptr)) {
         cout << "Could not register signal handler" << endl;
         exit(1);
     }
@@ -225,7 +225,7 @@ int main(int argc, char **argv) {
         cout << "Debugger interrupted with error: " << error << endl;
     }
 
-    client->setEventHandler(NULL);
+    client->setEventHandler(nullptr);
 
     client->disconnect(JDB_ERROR_NO_ERROR);
     delete client;

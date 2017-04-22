@@ -138,7 +138,7 @@ static JSFunctionSpec JDB_EnvironmentFuncs[] = {
    { "print", JSOP_WRAPPER ( JDB_fn_print ), 0, JSPROP_PERMANENT | JSPROP_ENUMERATE },
    { "println", JSOP_WRAPPER ( JDB_fn_println ), 0, JSPROP_PERMANENT | JSPROP_ENUMERATE },
    { "sendCommand", JSOP_WRAPPER ( JDB_fn_sendCommand ), 0, JSPROP_PERMANENT | JSPROP_ENUMERATE },
-   { NULL },
+   { nullptr },
 };
 
 DebuggerCtx &JSDebugger::getContext() {
@@ -147,9 +147,9 @@ DebuggerCtx &JSDebugger::getContext() {
 
 JSDebugger::JSDebugger( DebuggerCtx &ctx )
     : DebuggerEngine(ctx),
-      _rt(NULL),
-      _cx(NULL),
-      _global(NULL),
+      _rt(nullptr),
+      _cx(nullptr),
+      _global(nullptr),
       _log(LoggerFactory::getLogger()) {
 }
 
@@ -206,7 +206,7 @@ int JSDebugger::init() {
         return JDB_ERROR_JS_ENGINE_FAILED;
     }
 
-    RootedObject env( _cx, JS_NewObject( _cx, NULL, NULL, NULL ) );
+    RootedObject env( _cx, JS_NewObject( _cx, nullptr, nullptr, nullptr ) );
     if( !env ) {
         return JDB_ERROR_JS_CANNOT_CREATE_OBJECT;
     }
@@ -247,12 +247,12 @@ int JSDebugger::destroy() {
 
     if( _cx ) {
         JS_DestroyContext(_cx);
-        _cx = NULL;
+        _cx = nullptr;
     }
 
     if( _rt ) {
         JS_DestroyRuntime(_rt);
-        _rt = NULL;
+        _rt = nullptr;
     }
 
     JS_ShutDown();

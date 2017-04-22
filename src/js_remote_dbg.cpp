@@ -120,7 +120,7 @@ namespace MozJS {
 
                     debugger->setContextPaused( cx, block );
 
-                    while ( block ? ( ( action = queue.pop() ) != NULL ) : queue.get( action ) ) {
+                    while ( block ? ( ( action = queue.pop() ) != nullptr ) : queue.get( action ) ) {
 
                         ActionResult result = action->execute(cx, *debugger);
 

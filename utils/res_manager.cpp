@@ -56,7 +56,7 @@ Resource const *ResourceManager::getResource(const std::string& name) const {
     if ( it != _resources.end() ) {
         return &(it->second);
     }
-    return NULL;
+    return nullptr;
 }
 
 #ifdef _WIN32

@@ -85,7 +85,7 @@ namespace JSR {
     const char* COMMANDS_SEPARATORS[] = {
         "\r\n",
         "\n",
-        NULL
+        nullptr
     };
 
 }

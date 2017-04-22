@@ -1,3 +1,15 @@
+jsrdbg (0.0.7-0ubuntu1.16.04) xenial; urgency=medium
+
+  * New upstream version
+
+ -- Benjamin Kircher <benjamin.kircher@gmail.com>  Sat, 22 Apr 2017 11:53:18 +0200
+
+jsrdbg (0.0.6-0ubuntu3.16.04) xenial; urgency=medium
+
+  * Upstream git updates
+
+ -- Benjamin Kircher <kircher@otris.de>  Wed, 22 Mar 2017 11:49:31 +0200
+
 jsrdbg (0.0.6-0ubuntu2.16.04) xenial; urgency=medium
 
   * Add distribution version string to Ubuntu version

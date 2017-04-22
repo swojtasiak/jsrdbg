@@ -18,7 +18,7 @@
 	dh $@  --with autotools_dev
 
 override_dh_auto_configure:
-	autoreconf -i
+	autoreconf -i --include=/usr/share/aclocal/
 	dh_auto_configure
 
 # dh_make generated override targets

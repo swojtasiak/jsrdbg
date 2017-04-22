@@ -17,6 +17,15 @@ EXTRA_DIST = example/AUTHORS \
 	example/src/js/example.js \
 	example/src/js/package.json \
 	example/src/main.cpp \
-	contrib/ \	
+	contrib \
+    win/jsrdbg.rc \
+	win/jsrdbg.sln \
+	win/jsrdbg.vcxproj \
+	win/resource.h \
+	win/utils.vcxproj \
+	win/utils.vcxproj.filters \
+	utils/win-iconv \
+	src/tcp_protocol_win32.cpp \
+	src/tcp_protocol_win32.hpp \
 	Commons.mk
 

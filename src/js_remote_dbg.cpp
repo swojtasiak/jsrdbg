@@ -277,9 +277,9 @@ ActionResult ContinueAction::execute( JSContext *ctx, Debugger &debugger ) {
 /*************************/
 
 SpiderMonkeyDebugger::SpiderMonkeyDebugger( ClientManager &manager, const JSRemoteDebuggerCfg &cfg )
-    : _clientManager(manager),
-      _log( LoggerFactory::getLogger() ),
-      _cfg( cfg ) {
+    : _log( LoggerFactory::getLogger() ),
+      _cfg( cfg ),
+      _clientManager(manager) {
     // Register debugger as manager's event handler to get information about
     // every client's life cycle.
     manager.addEventHandler(this);

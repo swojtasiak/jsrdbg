@@ -308,8 +308,8 @@ int TCPClient::send() {
 }
 
 TCPProtocol::TCPProtocol( ClientManager &clientManager, QueueSignalHandler<Command> &commandHandler, const JSRemoteDebuggerCfg &cfg) :
-        _clientManager(clientManager),
         _log(LoggerFactory::getLogger()),
+        _clientManager(clientManager),
         _cfg(cfg),
         _serverSocket(0),
         // This pointer does not escape here,

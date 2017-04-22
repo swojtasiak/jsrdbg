@@ -56,8 +56,8 @@ void Runnable::interrupt() {
 /* Thread */
 
 Thread::Thread(Runnable &runnable)
-    : _runnable(runnable),
-      _started( false ) {
+    : _started( false ),
+      _runnable(runnable) {
 }
 
 Thread::~Thread() {

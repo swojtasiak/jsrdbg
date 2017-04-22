@@ -31,8 +31,8 @@ class JSLocalDebuggerImpl : protected JSEngineEventHandler {
 public:
     JSLocalDebuggerImpl(JSLocalDebugger &localDebugger, JSContext *ctx, JSDbgEngineOptions &options)
         : _engine(*this, ctx, -1, options),
-          _localDebugger(localDebugger),
-          _ctx(ctx) {
+          _ctx(ctx),
+          _localDebugger(localDebugger) {
     }
     virtual ~JSLocalDebuggerImpl() {
     }

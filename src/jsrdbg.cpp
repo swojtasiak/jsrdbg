@@ -235,8 +235,8 @@ int JSRemoteDebugger::addDebuggee( JSContext *ctx, JS::HandleObject debuggee ) {
  *********************************/
 
 JSRemoteDebuggerCfg::JSRemoteDebuggerCfg( JSRProtocolType protocol, int tcpPort, const std::string &tcpHost, int tcpBufferSize )
-    : _tcpPort( tcpPort ),
-      _tcpHost( tcpHost ),
+    : _tcpHost( tcpHost ),
+      _tcpPort( tcpPort ),
       _tcpBufferSize( tcpBufferSize ),
       _protocol(protocol),
       _scriptLoader(NULL) {

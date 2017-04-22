@@ -35,7 +35,7 @@
  * (benjamin.kircher@gmail.com) Implement 'stop' command.
  * (benjamin.kircher@gmail.com) Add CMake find script.
  * (benjamin.kircher@gmail.com) Make mutex locking exception-safe
- * (benjamin.kircher@gmail.com) Fix dangling referenceo
+ * (benjamin.kircher@gmail.com) Fix dangling reference
  * (slawomir@wojtasiak.com) Some deprecated direct calls to argc, vp removed.
  * (slawomir@wojtasiak.com) Bug fixes.
  * (slawomir@wojtasiak.com) autoconf - c++11 is mandatory since Win32 support was added.

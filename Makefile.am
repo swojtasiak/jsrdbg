@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = fix public utils src jrdb check
+SUBDIRS = fix public utils src jrdb check contrib
 
 EXTRA_DIST = example/AUTHORS \
 	example/COPYING \

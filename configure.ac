@@ -97,6 +97,7 @@ src/js/Makefile
 src/Makefile
 jrdb/js/Makefile
 jrdb/Makefile
+contrib/Makefile
 check/js/Makefile
 check/Makefile
 ])

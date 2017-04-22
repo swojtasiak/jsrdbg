@@ -359,8 +359,6 @@ void TCPProtocol::run() {
 
        while( running ) {
 
-           int rc;
-
            // Prepare read_fds again, because it might has been cleared by the "select".
            read_fds = fds;
 
@@ -435,7 +433,6 @@ void TCPProtocol::run() {
                        ClientPtrHolder<TCPClient> client(_clientManager, i);
                        if( client ) {
                            bool disconnect = false;
-                           int rc;
                            if( ( rc = client->recv() ) ) {
                                if( ( rc != JSR_ERROR_NO_ERROR ) ) {
                                    // No matter what, just disconnect the client.

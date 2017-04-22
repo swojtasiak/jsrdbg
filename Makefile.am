@@ -18,7 +18,7 @@ EXTRA_DIST = example/AUTHORS \
 	example/src/js/package.json \
 	example/src/main.cpp \
 	contrib \
-    win/jsrdbg.rc \
+	win/jsrdbg.rc \
 	win/jsrdbg.sln \
 	win/jsrdbg.vcxproj \
 	win/resource.h \

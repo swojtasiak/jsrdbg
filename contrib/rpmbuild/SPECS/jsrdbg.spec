@@ -1,12 +1,13 @@
 Name:		jsrdbg
 Version:	0.0.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	JavaScript Remote Debugger for SpiderMonkey
 Group:		Development/Debuggers
 License:	LGPLv2+
 URL:		https://github.com/swojtasiak/jsrdbg
 Source0:	https://github.com/swojtasiak/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
+BuildRequires:	autoconf-archive
 BuildRequires:	libtool
 BuildRequires:	gettext
 BuildRequires:	mozjs24-devel
@@ -73,6 +74,9 @@ make check
 %{_bindir}/jrdb
 
 %changelog
+* Tue Apr 25 2017 Benjamin Kircher <benjamin.kircher@gmail.com> 0.0.7-2
+- Fix missing BR
+
 * Sat Apr 22 2017 Benjamin Kircher <benjamin.kircher@gmail.com> 0.0.7-1
 - New upstream version
 - Install CMake find script

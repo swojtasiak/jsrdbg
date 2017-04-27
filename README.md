@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/swojtasiak/jsrdbg.svg?branch=master)](https://travis-ci.org/swojtasiak/jsrdbg)
+
 JavaScript Remote Debugger
 ==========================
 

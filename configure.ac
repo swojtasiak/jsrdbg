@@ -3,8 +3,6 @@
 
 AC_PREREQ([2.69])
 AC_INIT([jsrdbg], [0.0.7], [slawomir@wojtasiak.com])
-m4_include([m4/ax_pthread.m4])
-m4_include([m4/ax_lib_readline.m4])
 AM_INIT_AUTOMAKE
 LT_PREREQ([2.2])
 LT_INIT

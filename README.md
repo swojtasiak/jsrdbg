@@ -28,8 +28,8 @@ chapters.
 
 #### Dependencies
 
-Besides a working C++ compiler you need a few additional dependencies to
-compile jsrdbg.
+Besides a working C++ compiler (supporting C++11) you need a few additional
+dependencies to compile jsrdbg.
 
 On Fedora:
 ```sh

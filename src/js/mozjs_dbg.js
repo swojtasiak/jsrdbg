@@ -1458,12 +1458,12 @@
                 fn: function(ctx) {
                     var frame  = ctx.debuggerMediator.
                                         getPC().getFrame();
-                    var stop_function = function() {
+                    var stopFunction = function() {
                         ctx.debuggerMediator.pause();
                     };
                     var listener = frame.older ? frame.older.onStep : frame.onPop ;
                     if(listener){
-                        listener = stop_function;
+                        listener = stopFunction;
                     }
                     return HC_RES_CONTINUE;
                  }

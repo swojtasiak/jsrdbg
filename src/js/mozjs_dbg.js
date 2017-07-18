@@ -1461,8 +1461,10 @@
                     var stop_function = function() {
                         ctx.debuggerMediator.pause();
                     };
-                    frame.older ? frame.older.onStep = stop_function :
-                                  frame.onPop = stop_function;
+                    var listener = frame.older ? frame.older.onStep : frame.onPop ;
+                    if(listener){
+                        listener = stop_function;
+                    }
                     return HC_RES_CONTINUE;
                  }
             },

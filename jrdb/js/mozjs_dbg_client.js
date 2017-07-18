@@ -56,7 +56,13 @@
         "Usage:\n"+
         "step\n"+
         "s";
-        
+
+    const HELP_FINISH = "" +
+        "Finishes the execution of the current function body\n"+
+        "Usage:\n"+
+        "finish\n"+
+        "f";
+
     const HELP_NEXT = ""+
         "Steps program proceeding through subroutines. It doesn't enter\n"+
         "subroutine calls but executes them instead and pauses in the line just\n"+
@@ -184,6 +190,7 @@
         "pc - Prints information about current frame\n"+
         "step - Steps to a next instruction\n"+
         "next - Steps to a next instructions going through subroutines\n"+
+        "finish - Finishes the execution of the current function body\n"+
         "continue - Continues execution of the program being debugged\n"+
         "break,pause - Pauses the program being debugged or sets breakpoints\n"+
         "delete - Deletes breakpoints\n"+
@@ -795,6 +802,12 @@
                 fn: function( command ) {
                     env.sendCommand( protocolStrategy.getStep() );
                 }
+            },            {
+                alias: ['finish', 'f'],
+                help: HELP_FINISH,
+                fn: function( command ) {
+                    env.sendCommand( protocolStrategy.getFinish() );
+                }
             },
             {
                 alias: ['next','n'],
@@ -1074,6 +1087,13 @@
             return {
                 type: 'command',
                 name: 'step'
+            };
+        },
+        // finishes continuation of the current function body
+        getFinish: function() {
+            return {
+                type: 'command',
+                name: 'step_out'
             };
         },
         // Gets all contexts managed by the remote debuggger.

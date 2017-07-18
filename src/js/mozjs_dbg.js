@@ -1451,6 +1451,23 @@
             },
 
             /**
+             * finishes the continuation of the current function body
+             */
+            'step_out': {
+                needPause: true,
+                fn: function(ctx) {
+                    var frame  = ctx.debuggerMediator.
+                                        getPC().getFrame();
+                    var stop_function = function() {
+                        ctx.debuggerMediator.pause();
+                    };
+                    frame.older ? frame.older.onStep = stop_function :
+                                  frame.onPop = stop_function;
+                    return HC_RES_CONTINUE;
+                 }
+            },
+
+            /**
              * Steps to the next line proceeding through subroutines.
              */
             'next': {

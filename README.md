@@ -359,6 +359,7 @@ env - Prints environment variables
 pc - Prints information about current frame
 step - Steps to a next instruction
 next - Steps to a next instructions going through subroutines
+finish - Finishes the execution of the current function body
 continue - Continues execution of the program being debugged
 stop - Terminates a debuggee.
 break,pause - Pauses the program being debugged or sets breakpoints
@@ -679,6 +680,16 @@ Standard parameters described above have been omitted intentionally.
     Response: None.
 
     Req: {"type":"command","name":"step"}
+
+    ----
+
+    Name: step_out
+    Description: Finishes the execution of the current function body.
+    Request:
+        name - 'step_out'
+    Response: None.
+
+    Req: {"type":"command", "name": "step_out"}
 
     ----
 

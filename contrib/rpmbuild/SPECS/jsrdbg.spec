@@ -1,11 +1,14 @@
+%global commit       89613fc58c2b51e58c7ca93af52958c49c6bb828
+%global commitdate   20170720
+
 Name:		jsrdbg
 Version:	0.0.7
-Release:	2%{?dist}
+Release:	3.%{commitdate}git%(c=%{commit}; echo ${c:0:7})%{?dist}
 Summary:	JavaScript Remote Debugger for SpiderMonkey
 Group:		Development/Debuggers
 License:	LGPLv2+
 URL:		https://github.com/swojtasiak/jsrdbg
-Source0:	https://github.com/swojtasiak/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:	https://github.com/swojtasiak/%{name}/archive/%{commit}.tar.gz#/%{name}-%{commit}.tar.gz
 
 BuildRequires:	autoconf-archive
 BuildRequires:	libtool
@@ -74,6 +77,9 @@ make check
 %{_bindir}/jrdb
 
 %changelog
+* Thu Jul 20 2017 Benjamin Kircher <benjamin.kircher@gmail.com> 0.0.7-3.20170720git89613fc
+- New snapshot of upstream master
+
 * Tue Apr 25 2017 Benjamin Kircher <benjamin.kircher@gmail.com> 0.0.7-2
 - Fix missing BR
 

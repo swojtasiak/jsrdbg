@@ -45,6 +45,7 @@ public:
     };
     static MessageFactory *getInstance();
     std::string prepareContextList( const std::vector<JSContextState> &ctxList );
+    std::string prepareServerVersion( const std::string &version);
     std::string prepareErrorMessage( ErrorCode errorCode, const std::string &msg );
     std::string prepareWarningMessage( WarnCode warnCode, const std::string &msg );
 private:

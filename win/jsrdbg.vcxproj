@@ -115,6 +115,10 @@
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup>
+    <CustomBuildBeforeTargets>GitVersionTarget</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -182,4 +186,10 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemDefinitionGroup>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)..\scripts\generate_version_h</Command>
+      <Outputs>$(ProjectDir)..\src\version.h</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
 </Project>

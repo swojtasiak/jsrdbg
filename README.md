@@ -950,6 +950,17 @@ Standard parameters described above have been omitted intentionally.
 
     ----
 
+    Name: server_version
+    Description: Gets the version of the remote debugger.
+    Request: Plain string: server_version\n
+    Response:
+        subtype  - 'server_version'
+        version - String representing the git tag, commit etc.
+
+    Res: {"type":"info","subtype":"server_version","version":"0.0.7-16-gd6de3b3"}
+
+    ----
+
     Name: exit
     Description: Closes debugger.
     Request: Plain string: exit\n

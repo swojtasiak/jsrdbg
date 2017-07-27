@@ -24,6 +24,9 @@
     const HELP_VERSION = ""+
         "Shows application version.";
 
+   const HELP_SERVER_VERSION = ""+
+        "Shows the version of the remote debugger";
+
     const HELP_DELETE = ""+
         "Arguments are breakpoint numbers with spaces in between.\n"+
         "To delete all breakpoints, give no argument.\n"+
@@ -199,6 +202,7 @@
         "backtrace - Prints backtrace of stack frames\n"+
         "print - Evaluates expressions\n"+
         "version - Shows application version\n"+
+        "server_version - Shows the version of the remote debugger\n"+
         "source - Loads script source code\n"+
         "animation - Enables/disables stepping animation";
         
@@ -552,7 +556,9 @@
         },
         
         info: {
-        
+            server_version: function(packet){
+                env.println("server version: " + packet.version);
+            },
             /* Prints list of available contexts. */
             contexts_list: function( packet ) {
                 var contexts = "Available JSContext instances: \n";
@@ -737,6 +743,13 @@
                 fn: function( command ) {
                     env.println('Client version: ' + env.packageVersion  + " Built for SpiderMonkey: " 
                                 + env.engineMajorVersion + "." + env.engineMinorVersion);
+                }
+            },
+            {
+                alias: ['server_version'],
+                help: HELP_SERVER_VERSION,
+                fn: function( command ){
+                    env.sendCommand( protocolStrategy.getServerVersion());
                 }
             },
             { 
@@ -1074,6 +1087,10 @@
     }
     
     ProtocolStrategy.prototype = {
+
+        getServerVersion: function(){
+            return "server_version";
+        },
         // Gets current PC from the server.
         getPC: function( source ) {
             return {

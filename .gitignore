@@ -98,3 +98,9 @@ fix/fixnostack
 *.swo
 *.swn
 
+# generated files
+src/version.h
+
+# MSVS
+win/.jsrdbg.vcxproj.un~
+win/jsrdbg.vcxproj~

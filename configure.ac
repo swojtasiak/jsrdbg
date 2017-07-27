@@ -100,5 +100,11 @@ check/js/Makefile
 check/Makefile
 ])
 
+#generate Version header
+echo "#ifndef VERSION_H" > src/version.h
+echo "#define VERSION_H" >> src/version.h
+echo "#define JSRDBG_VERSION \"$(git describe --abbrev=4 --dirty --always --tags)\"" >> src/version.h
+echo "#endif" >> src/version.h
+
 AC_OUTPUT
 

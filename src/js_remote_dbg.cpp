@@ -28,6 +28,7 @@
 #include <encoding.hpp>
 
 #include "message_builder.hpp"
+#include "version.h"
 
 using namespace JSR;
 using namespace JS;
@@ -322,6 +323,14 @@ void SpiderMonkeyDebugger::handle( command_queue &queue, int signal ) {
 
             // Gets list of all available contexts.
             sendContextsList( clientId );
+
+        } else if (value == "server_version") {
+            // send the sever version
+            // the sever version is stored in a macro generated via the
+            // buildsystem
+            Command command( clientId, -1, MessageFactory::getInstance()->prepareServerVersion( JSRDBG_VERSION ) );
+
+            _clientManager.sendCommand( command );
 
         } else {
 

@@ -53,6 +53,17 @@ std::string MessageFactory::prepareContextList( const std::vector<JSContextState
     return ss.str();
 }
 
+string MessageFactory::prepareServerVersion( const std::string &version ) {
+    stringstream ss;
+
+    ss  << "{\"type\":\"info\",\"subtype\":\"server_version\","
+        << "\"version\":\""
+        << version
+        << "\"}";
+
+    return ss.str();
+}
+
 string MessageFactory::prepareErrorMessage( ErrorCode errorCode, const string &msg ) {
     stringstream ss;
     ss << "{\"type\":\"error\",\"code\":" << errorCode << ",\"message\":\"" << msg << "\"}";

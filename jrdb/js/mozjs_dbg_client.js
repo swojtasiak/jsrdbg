@@ -247,30 +247,39 @@
             return sendCommandCoreFn( contextId, command );
         };
         return function( command, fn ) {
-            if( fn ) {
-                // Random request ID.
-                let now = Date.now();
-                var id = "";
-                for( let i = 0; i < 16; i++ ) {
-                    id += ID_CHARS[Math.floor(Math.random() * (ID_CHARS.length - 1))];
-                } 
-                command.id = id;
+            /* Generates a unique request ID for the purpose of the response identification. */
+            var requestId = "";
+            for( let i = 0; i < 16; i++ ) {
+                requestId += ID_CHARS[Math.floor(Math.random() * (ID_CHARS.length - 1))];
+            }
+            let now = Date.now();
+            if( typeof(command) != 'string' ) {
+                command.id = requestId;
                 sendCommandFn( command );
                 if( fn ) {
-                    waitingResponseHandlers[id] = {
+                    waitingResponseHandlers[requestId] = {
                         fn: fn,
                         time: now
                     };
                 }
-                // Clean all outdated handlers (30 sec).
-                for( let key in waitingResponseHandlers ) {
-                    let responseHandler = waitingResponseHandlers[key];
-                    if( responseHandler.time < now - 1000 * 30 ) {
-                        delete waitingResponseHandlers[key];
-                    }
-                }
             } else {
-                sendCommandFn( command );
+            	// Handle system commands using standard contexless handlers.
+                sendCommandFn( command + "/" + requestId );
+                waitingResponseHandlers[requestId] = {
+                    fn: function (command) {        			
+                        var handler = debuggerEventHandlerFactory.create(
+                            command.type, command.subtype);
+                        handler( command );
+                    },
+                    time: now
+                };
+            }
+            // Clean all outdated handlers (30 sec).
+            for( let key in waitingResponseHandlers ) {
+                let responseHandler = waitingResponseHandlers[key];
+                if( responseHandler.time < now - 1000 * 30 ) {
+                    delete waitingResponseHandlers[key];
+                }
             }
         };
     })();
@@ -557,7 +566,7 @@
         
         info: {
             server_version: function(packet){
-                env.println("server version: " + packet.version);
+                env.println("Server version: " + packet.version);
             },
             /* Prints list of available contexts. */
             contexts_list: function( packet ) {
@@ -1281,7 +1290,6 @@
                         env.println( "Unknown command: " + JSON.stringify( command ) );
                     }
                 }
-                
             
             } catch( exc ) {
                 env.println( 'Unhandled exception: ' + exc.message + ' Stack: ' + exc.stack );

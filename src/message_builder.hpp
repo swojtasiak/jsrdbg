@@ -44,8 +44,8 @@ public:
         CW_ENGINE_PAUSED = 1
     };
     static MessageFactory *getInstance();
-    std::string prepareContextList( const std::vector<JSContextState> &ctxList );
-    std::string prepareServerVersion( const std::string &version);
+    std::string prepareContextList( const std::vector<JSContextState> &ctxList, const std::string &requestId );
+    std::string prepareServerVersion( const std::string &version, const std::string &requestId );
     std::string prepareErrorMessage( ErrorCode errorCode, const std::string &msg );
     std::string prepareWarningMessage( WarnCode warnCode, const std::string &msg );
 private:

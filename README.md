@@ -612,10 +612,11 @@ are: get_available_contexts and exit.
 
 Request is normalized and consists of following parts:
 
-*[context id]/(JSON PACKET)\n*
+*[context id]/(JSON PACKET/PLAIN STRING)[/ID]\n*
 
 * *context id*  - Numerical identifier of the JSContext we would like to send packet to. It's optional parameter in case of non-existence the packet is sent to all the contexts.
 * *JSON PACKET* - Command itself, mandatory.
+* *ID*          - Optional request ID. It's just sent back with a response and can be used to pair them. It can be used only with non JSON commands. JSON commands hold "id" inside the command body.
 * *\n*          - Commands are separated by new-line characters.
 
 JSON packet consists of the following properties:

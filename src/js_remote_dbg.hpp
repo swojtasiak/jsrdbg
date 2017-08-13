@@ -102,8 +102,10 @@ protected:
     void handle( Utils::Event &event );
 private:
     void sendErrorMessage( int clientId, JSR::MessageFactory::ErrorCode errorCode, const std::string &msg );
-    void sendContextsList( int clientId );
+    void sendContextsList( int clientId, int contextId, const std::string &requestId );
     void sendCommandToQueue( JSContext *ctx, action_queue &queue, Command &command );
+    bool isSystemCommand( const std::string &command, const std::string &commandName );
+    std::string extractRequestId( const std::string &command );
 private:
     // ID of the next registered engine.
     static int _contextCounter;

@@ -307,7 +307,7 @@ void SpiderMonkeyDebugger::handle( command_queue &queue, int signal ) {
         // Sends command to a debugger.
         const string &value = command.getValue();
 
-        if( value == "exit" ) {
+        if( isSystemCommand( value, "exit" ) ) {
 
             // Just disconnect the client it's the protocol that is
             // responsible for invoking the disposing procedure. Remember
@@ -319,16 +319,19 @@ void SpiderMonkeyDebugger::handle( command_queue &queue, int signal ) {
                 }
             }
 
-        } else if( value == "get_available_contexts" ) {
+        } else if( isSystemCommand( value, "get_available_contexts" ) ) {
 
             // Gets list of all available contexts.
-            sendContextsList( clientId );
+            const string requestId = extractRequestId(value);
+            sendContextsList( clientId, command.getContextId(), requestId );
 
-        } else if (value == "server_version") {
-            // send the sever version
-            // the sever version is stored in a macro generated via the
-            // buildsystem
-            Command command( clientId, -1, MessageFactory::getInstance()->prepareServerVersion( JSRDBG_VERSION ) );
+        } else if ( isSystemCommand( value, "server_version") ) {
+            // Sends the sever version.
+            // The sever version is stored in a macro generated via the
+            // build system.
+            const string requestId = extractRequestId(value);
+            Command command( clientId, command.getContextId(),
+                    MessageFactory::getInstance()->prepareServerVersion( JSRDBG_VERSION, requestId ) );
 
             _clientManager.sendCommand( command );
 
@@ -366,7 +369,7 @@ void SpiderMonkeyDebugger::handle( command_queue &queue, int signal ) {
 
                     // No JSContext found for given ID.
                     sendErrorMessage( clientId, MessageFactory::CE_UNKNOWN_CONTEXT_ID, "Unknown JS Context." );
-                    sendContextsList( clientId );
+                    sendContextsList( clientId, -1, "" );
 
                 }
 
@@ -389,6 +392,22 @@ void SpiderMonkeyDebugger::handle( command_queue &queue, int signal ) {
     }
 }
 
+/* Extracts optional request ID from the system command. */
+std::string SpiderMonkeyDebugger::extractRequestId( const std::string &command ) {
+    int separator = command.find('/');
+    if (separator > 0) {
+        return command.substr(separator + 1);
+    } else {
+        return "";
+    }
+}
+
+/* Checks if command is a system one. */
+bool SpiderMonkeyDebugger::isSystemCommand( const std::string &command,
+        const std::string &commandName ) {
+    return command.find(commandName) == 0;
+}
+
 /**
  * Sends error message to a client.
  */
@@ -406,7 +425,7 @@ void SpiderMonkeyDebugger::sendErrorMessage( int clientId, JSR::MessageFactory::
 /**
  * Sends contexts list to the client.
  */
-void SpiderMonkeyDebugger::sendContextsList( int clientId ) {
+void SpiderMonkeyDebugger::sendContextsList( int clientId, int contextId, const std::string &requestId ) {
 
     MutexLock locker(_lock);
 
@@ -421,7 +440,7 @@ void SpiderMonkeyDebugger::sendContextsList( int clientId ) {
         contexts.push_back( state );
     }
 
-    Command command( clientId, -1, MessageFactory::getInstance()->prepareContextList( contexts ) );
+    Command command( clientId, contextId, MessageFactory::getInstance()->prepareContextList( contexts, requestId ) );
 
     _clientManager.sendCommand( command );
 }
@@ -478,7 +497,7 @@ void SpiderMonkeyDebugger::handle( Event &event ) {
         _log.debug( "New client connected: %d.", clientId );
 
         // Send a list of available JS contexts to the client.
-        sendContextsList( clientId );
+        sendContextsList( clientId, -1, "" );
 
         break;
 

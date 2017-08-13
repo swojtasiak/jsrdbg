@@ -39,3 +39,7 @@
  * (slawomir@wojtasiak.com) Some deprecated direct calls to argc, vp removed.
  * (slawomir@wojtasiak.com) Bug fixes.
  * (slawomir@wojtasiak.com) autoconf - c++11 is mandatory since Win32 support was added.
+
+ 0.0.8 (13.08.2017)
+ * (slawomir@wojtasiak.com) Request ID support for non JSON commands.
+ * (slawomir@wojtasiak.com) Minor bug fixes.

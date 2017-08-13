@@ -37,9 +37,13 @@ MessageFactory *MessageFactory::getInstance() {
     return &FACTORY;
 }
 
-std::string MessageFactory::prepareContextList( const std::vector<JSContextState> &ctxList ) {
+std::string MessageFactory::prepareContextList( const std::vector<JSContextState> &ctxList, const std::string &requestId ) {
     stringstream ss;
-    ss << "{\"type\":\"info\",\"subtype\":\"contexts_list\",\"contexts\":[";
+    ss << "{\"type\":\"info\",\"subtype\":\"contexts_list\",";
+    if ( !requestId.empty() ) {
+      ss  << "\"id\":\"" << requestId << "\"" << ',';
+    }
+    ss << "\"contexts\":[";
     for( std::vector<JSContextState>::const_iterator it = ctxList.begin(); it != ctxList.end(); it++ ) {
         const JSContextState &desc = *it;
         if( it != ctxList.begin() ) {
@@ -53,11 +57,14 @@ std::string MessageFactory::prepareContextList( const std::vector<JSContextState
     return ss.str();
 }
 
-string MessageFactory::prepareServerVersion( const std::string &version ) {
+string MessageFactory::prepareServerVersion( const std::string &version, const std::string &requestId ) {
     stringstream ss;
 
-    ss  << "{\"type\":\"info\",\"subtype\":\"server_version\","
-        << "\"version\":\""
+    ss  << "{\"type\":\"info\",\"subtype\":\"server_version\",";
+    if ( !requestId.empty() ) {
+      ss  << "\"id\":\"" << requestId << "\"" << ',';
+    }
+    ss  << "\"version\":\""
         << version
         << "\"}";
 

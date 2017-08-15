@@ -263,7 +263,7 @@
                     };
                 }
             } else {
-            	// Handle system commands using standard contexless handlers.
+            	// Handle non-JSON commands using standard contexless handlers.
                 sendCommandFn( command + "/" + requestId );
                 waitingResponseHandlers[requestId] = {
                     fn: function (command) {        			

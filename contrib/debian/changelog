@@ -1,3 +1,21 @@
+jsrdbg (0.0.8-1ubuntu1.16.04) trusty; urgency=medium
+
+  * New release
+
+ -- Benjamin Kircher <kircher@otris.de>  Wed, 6 Sep 2017 15:22:12 +0200
+
+jsrdbg (0.0.7-2ubuntu1.16.04) trusty; urgency=medium
+
+  * New snapshot of upstream master (55f9aa9)
+
+ -- Benjamin Kircher <kircher@otris.de>  Fri, 28 Jul 2017 12:43:55 +0200
+
+jsrdbg (0.0.7-1ubuntu1.16.04) xenial; urgency=medium
+
+  * New snapshot of upstream master
+
+ -- Benjamin Kircher <kircher@otris.de>  Mon, 24 Jul 2017 12:56:19 +0200
+
 jsrdbg (0.0.7-0ubuntu1.16.04) xenial; urgency=medium
 
   * New upstream version

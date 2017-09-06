@@ -1,14 +1,10 @@
-%global commit       26f9f2b27c04b4aec9cd67baaf9a0a206bbbd5c7
-%global commitdate   20170727
-
 Name:		jsrdbg
-Version:	0.0.7
-Release:	4.%{commitdate}git%(c=%{commit}; echo ${c:0:7})%{?dist}
+Version:	0.0.8
+Release:	1%{?dist}
 Summary:	JavaScript Remote Debugger for SpiderMonkey
-Group:		Development/Debuggers
 License:	LGPLv2+
 URL:		https://github.com/swojtasiak/jsrdbg
-Source0:	https://github.com/swojtasiak/%{name}/archive/%{commit}.tar.gz#/%{name}-%{commit}.tar.gz
+Source0:	https://github.com/swojtasiak/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires:	autoconf-archive
 BuildRequires:	libtool
@@ -29,7 +25,6 @@ directly to the application and even exposing it to remote clients using TCP.
 
 %package devel
 Summary: Header files, libraries and development documentation for %{name}
-Group: Development/Libraries
 Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description devel
@@ -39,7 +34,6 @@ will need to install %{name}-devel.
 
 %package -n jrdb
 Summary: A command line debugger client for %{name}
-Group: Development/Debuggers
 License: GPLv2+
 
 %description -n jrdb
@@ -47,7 +41,7 @@ This package contains a command line client that allows to connect to a remote
 JavaScript debugger.
 
 %prep
-%setup -qn%{name}-%{commit}
+%setup -qn%{name}-%{version}
 
 %build
 autoreconf -i
@@ -59,6 +53,10 @@ make check
 
 %install
 %make_install DESTDIR=%{buildroot}
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
 
 %files
 %license COPYING
@@ -77,6 +75,12 @@ make check
 %{_bindir}/jrdb
 
 %changelog
+* Wed Sep 06 2017 Benjamin Kircher <benjamin.kircher@gmail.com> - 0.0.8-1
+- New upstream release; remove Group: tag; invoke ldconfig
+
+* Mon Aug 21 2017 Benjamin Kircher <benjamin.kircher@gmail.com> - 0.0.7-5.20170815git52daa05
+- New snapshot of upstream master. Contains protocol changes
+
 * Thu Jul 27 2017 Benjamin Kircher <benjamin.kircher@gmail.com> - 0.0.7-4.20170727git26f9f2b
 - New snapshot of upstream master
 

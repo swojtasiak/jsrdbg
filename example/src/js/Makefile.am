@@ -21,14 +21,15 @@ endif
 
 noinst_LTLIBRARIES = libdbgexampleres.la
 
-libdbgexampleres_la_SOURCES = example.js
-nodist_libdbgexampleres_la_SOURCES = example.js.lo
+libdbgexampleres_la_SOURCES = example_dog.js example_print.js
+nodist_libdbgexampleres_la_SOURCES = example_dog.js.lo example_print.js.lo
 
-libdbgexampleres_la_LIBADD = example.js.lo
+libdbgexampleres_la_LIBADD = example_dog.js.lo example_print.js.lo
 libdbgexampleres_la_LDFLAGS = -no-undefined
 
 CLEANFILES = *.js.lo *.js.o
 
 EXTRA_DIST = Gruntfile.js \
-	example.js \
+	example_dog.js \
+	example_print.js \
 	package.json

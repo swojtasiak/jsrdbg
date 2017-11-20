@@ -51,8 +51,32 @@ static JSClass global_class = {
 };
 
 // Example script.
-extern char _binary_example_js_start[];
-extern char _binary_example_js_end[];
+extern char _binary_example_dog_js_start[];
+extern char _binary_example_dog_js_end[];
+extern char _binary_example_print_js_start[];
+extern char _binary_example_print_js_end[];
+
+struct JsResource {
+    char *source;
+    int length;
+    string name;
+};
+
+JsResource JS_Resources[] = {
+    {
+        _binary_example_dog_js_start,
+        static_cast<int>(_binary_example_dog_js_end - _binary_example_dog_js_start),
+        "example_dog.js"
+    },
+    {
+        _binary_example_print_js_start,
+        static_cast<int>(_binary_example_print_js_end - _binary_example_print_js_start),
+        "example_print.js"
+    },
+    {
+        NULL, 0, ""
+    }
+};
 
 // Naive implementation of the printing to the standard output.
 JSBool JS_fn_print( JSContext *cx, unsigned int argc, Value *vp ) {
@@ -86,10 +110,17 @@ public:
     ~ScriptLoader() { }
 
     int load( JSContext *cx, const std::string &path, std::string &script ) {
-        if( path == "example.js" ) {
-            script = string(_binary_example_js_start, _binary_example_js_end - _binary_example_js_start);
-            return JSR_ERROR_NO_ERROR;
+
+        JsResource *jsResources = &JS_Resources[0];
+
+        while(jsResources->source) {
+            if(path == jsResources->name) {
+                script = string(jsResources->source, jsResources->length);
+                return JSR_ERROR_NO_ERROR;
+            }
+            jsResources++;
         }
+
         return JSR_ERROR_FILE_NOT_FOUND;
     }
 
@@ -98,12 +129,13 @@ public:
 ScriptLoader loader;
 
 // Runs example script.
-bool RunScript( JSContext *cx, JSRemoteDebugger &dbg ) {
+bool RunScript(JSContext *cx, JSRemoteDebugger &dbg, unsigned int scriptNumber) {
 
     // New global object gets it's own compartments too.
     CompartmentOptions options;
     options.setVersion(JSVERSION_LATEST);
-    JS::RootedObject global(cx, JS_NewGlobalObject( cx, &global_class, nullptr, options ));
+    JS::RootedObject global(cx, JS_NewGlobalObject( cx, &global_class, nullptr,
+            options ));
     if( !global ) {
         cout << "Cannot create global object." << endl;
         return false;
@@ -138,8 +170,13 @@ bool RunScript( JSContext *cx, JSRemoteDebugger &dbg ) {
     // Run Garbage collector.
     JS_GC( JS_GetRuntime( cx ) );
 
+    cout << "Evaluating chosen script: " << JS_Resources[scriptNumber].name << endl;
+
     // Runs JS script.
-    result = JS_EvaluateScript( cx, global.get(), _binary_example_js_start, _binary_example_js_end  -_binary_example_js_start, "example.js", 0, &rval);
+    result = JS_EvaluateScript( cx, global.get(),
+            JS_Resources[scriptNumber].source,
+            JS_Resources[scriptNumber].length,
+            JS_Resources[scriptNumber].name.c_str(), 0, &rval);
 
     cout << "Application has been finished." << endl;
 
@@ -147,7 +184,7 @@ bool RunScript( JSContext *cx, JSRemoteDebugger &dbg ) {
 }
 
 // Initializes debugger and runs script into its scope.
-bool RunDbgScript( JSContext *cx ) {
+bool RunDbgScript(JSContext *cx, bool suspect, unsigned int scriptNumber) {
 
     // Initialize debugger.
 
@@ -160,7 +197,9 @@ bool RunDbgScript( JSContext *cx ) {
     // Configure debugger engine.
     JSDbgEngineOptions dbgOptions;
     // Suspend script just after starting it.
-    dbgOptions.suspended();
+    if (suspect) {
+        dbgOptions.suspended();
+    }
 
     JSRemoteDebugger dbg( cfg );
 
@@ -175,12 +214,24 @@ bool RunDbgScript( JSContext *cx ) {
         return false;
     }
 
-    bool result = RunScript( cx, dbg );
+    cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+
+    cout << "Debugger has been installed. Press ENTER to continue...";
+
+    cin.get();
+
+    bool result = RunScript( cx, dbg, scriptNumber);
 
     dbg.stop();
     dbg.uninstall( cx );
 
     return result;
+}
+
+bool ReadYesNo() {
+    string yn;
+    cin >> yn;
+    return yn == "y";
 }
 
 int main(int argc, char **argv) {
@@ -206,7 +257,29 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    if( !RunDbgScript( cx ) ) {
+    cout << "Suspect the script after loading? (y/n) ";
+    bool suspect = ReadYesNo();
+
+    for (int i = 1; JS_Resources[i-1].length > 0; i++) {
+        cout << i << ". Script: " << JS_Resources[i-1].name << endl;
+    }
+
+    cout << "Choose script to run: ";
+
+    unsigned int script;
+
+    cin >> script;
+
+    if (script >= sizeof(JS_Resources)/sizeof(JsResource)) {
+        cout << "Wrong script number: " << script;
+        exit(1);
+    }
+
+    if (suspect) {
+        cout << "Script will be suspected after loading." << endl;
+    }
+
+    if( !RunDbgScript(cx, suspect, script - 1) ) {
         cout << "Application failed." << endl;
     }
 

@@ -148,7 +148,7 @@
         "file if script url is provided in arguments.\n"+
         "Usage:\n"+
         "source [url]\n"+
-        "[url] - Script url.";
+        "[url] - Optional script url.";
         
     const HELP_CONTEXT = ""+
         "Every SpiderMonkey engine can run more than one JSRuntime (typically one for a\n"+

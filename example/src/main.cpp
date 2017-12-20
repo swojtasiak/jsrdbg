@@ -184,7 +184,7 @@ bool RunScript(JSContext *cx, JSRemoteDebugger &dbg, unsigned int scriptNumber) 
 }
 
 // Initializes debugger and runs script into its scope.
-bool RunDbgScript(JSContext *cx, bool suspect, unsigned int scriptNumber) {
+bool RunDbgScript(JSContext *cx, bool suspend, unsigned int scriptNumber) {
 
     // Initialize debugger.
 
@@ -197,7 +197,7 @@ bool RunDbgScript(JSContext *cx, bool suspect, unsigned int scriptNumber) {
     // Configure debugger engine.
     JSDbgEngineOptions dbgOptions;
     // Suspend script just after starting it.
-    if (suspect) {
+    if (suspend) {
         dbgOptions.suspended();
     }
 
@@ -257,8 +257,8 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    cout << "Suspect the script after loading? (y/n) ";
-    bool suspect = ReadYesNo();
+    cout << "Suspend the script after loading? (y/n) ";
+    bool suspend = ReadYesNo();
 
     for (int i = 1; JS_Resources[i-1].length > 0; i++) {
         cout << i << ". Script: " << JS_Resources[i-1].name << endl;
@@ -275,11 +275,11 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    if (suspect) {
-        cout << "Script will be suspected after loading." << endl;
+    if (suspend) {
+        cout << "Script will be suspended after loading." << endl;
     }
 
-    if( !RunDbgScript(cx, suspect, script - 1) ) {
+    if( !RunDbgScript(cx, suspend, script - 1) ) {
         cout << "Application failed." << endl;
     }
 

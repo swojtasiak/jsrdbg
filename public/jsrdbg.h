@@ -217,8 +217,9 @@ public:
      */
     virtual int interrupt( JSContext *ctx );
     /**
-     * Forces the debugger engine to execute pending commands. This operation has 
-     * to be called from JS engine thread and the script cannot be in paused state.
+     * Forces the debugger engine to execute pending commands. This operation
+     * has to be called from JS engine thread and the engine must not be in
+     * the paused state.
      *
      * @param ctx JSContext handling the debuggee.
      * @return Error code.

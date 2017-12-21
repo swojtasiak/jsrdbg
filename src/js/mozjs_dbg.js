@@ -661,7 +661,7 @@
              * event in the future.
              */
             this._dbg.onNewScript = (function(script) {
-                
+
                 if( env.isLoggerEnabled() ) {
                     env.print( 'New script has been loaded: ' + script.url );
                 }
@@ -2015,7 +2015,7 @@
          * @param conn Remote connection to the debugger.
          */
         handleCommand: function( clientId, command ) {
-            
+
             if( env.isLoggerEnabled() ) {
                 env.print( 'Command: ' + JSON.stringify( command ) + ' from client: ' + clientId );
             }

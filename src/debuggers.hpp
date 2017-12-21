@@ -70,7 +70,8 @@ public:
     virtual int install( JSContext *cx, const std::string &contextName, const JSDbgEngineOptions &options ) = 0;
     virtual int uninstall( JSContext *cx ) = 0;
     virtual int interrupt( JSContext *cx ) = 0;
-    virtual int registerDebuggee( JSContext *cx, JS::HandleObject debuggee ) = 0;
+    virtual int handlePendingCommands( JSContext *cx ) = 0;
+    virtual int registerDebuggee(JSContext *cx, JS::HandleObject debuggee) = 0;
     virtual int unregisterDebuggee( JSContext *cx, JS::HandleObject debuggee ) = 0;
     virtual JSDebuggerEngine* getEngine( JSContext *cx ) const;
 };

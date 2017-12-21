@@ -565,7 +565,11 @@
         },
         
         info: {
-            server_version: function(packet){
+            breakpoint_set: function(packet) {
+                env.println( 'Breakpoint ' + packet.bid + ': script ' +
+                            packet.url + ', ' + packet.line + '.' );
+            },
+            server_version: function(packet) {
                 env.println("Server version: " + packet.version);
             },
             /* Prints list of available contexts. */
@@ -1252,6 +1256,7 @@
                 if( command.id ) {
                     let responseHandler = waitingResponseHandlers[command.id];
                     if( responseHandler ) {
+                        env.println("Mmay handlera.");
                         let error = command.type === 'error';
                         let fn = responseHandler.fn;
                         let handled = false;

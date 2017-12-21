@@ -653,6 +653,30 @@ int SpiderMonkeyDebugger::interrupt( JSContext *cx ) {
     return JSR_ERROR_NO_ERROR;
 }
 
+// This method has to be called on the same thread which runs the JS engine.
+int SpiderMonkeyDebugger::handlePendingCommands( JSContext *cx ) {
+    MutexLock locker(_lock);
+
+    JSDebuggerEngine *engine = JSDebuggerEngine::getEngineForContext(cx);
+    if ( !engine ) {
+        return JSR_ERROR_SM_DEBUGGER_IS_NOT_INSTALLED;
+    }
+
+    DbgContextData *ctxData = ENGINE_DATA(engine);
+
+    // Enter into the debugger compartment.
+    JSAutoRequest req(cx);
+    JSAutoCompartment cr(cx, engine->getDebuggerGlobal());
+
+    // There is no need to call it when context is paused, because
+    // debugger is handling commands on the fly in such a case.
+    if ( !ctxData->paused ) {
+        JSR_CommandLoop(cx, false, false);
+    }
+
+    return JSR_ERROR_NO_ERROR;
+}
+
 int SpiderMonkeyDebugger::uninstall( JSContext *cx ) {
 
     MutexLock locker(_lock);

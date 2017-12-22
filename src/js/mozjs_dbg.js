@@ -914,7 +914,7 @@
             if( script ) {
                 url = script.url;
                 var offset = frame.offset;
-                if( offset ) {
+                if( typeof(offset) !== 'undefined' ) {
                     line = script.getOffsetLine( offset );
                 }
             }

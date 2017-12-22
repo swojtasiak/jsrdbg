@@ -108,6 +108,10 @@ public:
         return _debugger->interrupt( ctx );
     }
 
+    int handlePendingCommands( JSContext *ctx ) {
+        return _debugger->handlePendingCommands(ctx);
+    }
+
     int start() {
 
         MutexLock lock( _mutex );
@@ -212,6 +216,10 @@ int JSRemoteDebugger::uninstall( JSContext *ctx ) {
 
 int JSRemoteDebugger::interrupt( JSContext *ctx ) {
     return _impl->interrupt( ctx );
+}
+
+int JSRemoteDebugger::handlePendingCommands( JSContext *ctx ) {
+    return _impl->handlePendingCommands( ctx );
 }
 
 int JSRemoteDebugger::start() {

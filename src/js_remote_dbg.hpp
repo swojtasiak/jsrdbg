@@ -85,6 +85,7 @@ public:
     int install( JSContext *cx, const std::string &contextName, const JSDbgEngineOptions &options );
     int uninstall( JSContext *cx );
     int interrupt( JSContext *cx );
+    int handlePendingCommands( JSContext *cx );
     int registerDebuggee( JSContext *cx, JS::HandleObject debuggee );
     int unregisterDebuggee( JSContext *cx, JS::HandleObject debuggee );
     const JSRemoteDebuggerCfg &getDebuggerConf() const;

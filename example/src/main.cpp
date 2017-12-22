@@ -220,6 +220,14 @@ bool RunDbgScript(JSContext *cx, bool suspend, unsigned int scriptNumber) {
 
     cin.get();
 
+    // Before running the script force the debugger to execute pending commands.
+    if( dbg.handlePendingCommands( cx ) != JSR_ERROR_NO_ERROR ) {
+        // Just in case.
+        dbg.uninstall( cx );
+        cout << "Debugger has been uninstalled." << endl;
+        return false;
+    }
+
     bool result = RunScript( cx, dbg, scriptNumber);
 
     dbg.stop();

@@ -176,6 +176,7 @@ public:
     virtual int start() = 0;
     virtual int stop() = 0;
     virtual int interrupt( JSContext *ctx ) = 0;
+    virtual int handlePendingCommands( JSContext *ctx ) = 0;
     virtual int removeDebuggee( JSContext *ctx, JS::HandleObject debuggee ) = 0;
     virtual int addDebuggee( JSContext *ctx, JS::HandleObject debuggee ) = 0;
 };
@@ -215,6 +216,15 @@ public:
      * @return Error code.
      */
     virtual int interrupt( JSContext *ctx );
+    /**
+     * Forces the debugger engine to execute pending commands. This operation
+     * has to be called from JS engine thread and the engine must not be in
+     * the paused state.
+     *
+     * @param ctx JSContext handling the debuggee.
+     * @return Error code.
+     */
+    virtual int handlePendingCommands( JSContext *ctx );
     /**
      * Starts a debugger instance.
      * This method have to be called from the JS engine thread.

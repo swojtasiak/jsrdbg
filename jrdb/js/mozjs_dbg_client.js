@@ -986,7 +986,7 @@
                             let depth;
                             if( !command.isOption('all', 'a') ) {
                                 if( command.args.length > 0 ) {
-                                    let depth = parseInt(command.args[0]);
+                                    depth = parseInt(command.args[0]);
                                     if( isNaN( depth ) ) {
                                         env.println('Depths has to be an integer value.');
                                         return;

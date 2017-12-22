@@ -836,7 +836,7 @@ Standard parameters described above have been omitted intentionally.
     Name: get_variables
     Description: Get list of variables from given frame.
     Request:
-        name - 'get_stacktrace'
+        name - 'get_variables'
         query - Query.
             depth - Frame depth.
             options - Retrieving options.

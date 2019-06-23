@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/swojtasiak/jsrdbg.svg?branch=master)](https://travis-ci.org/swojtasiak/jsrdbg)
+[![CircleCI](https://circleci.com/gh/swojtasiak/jsrdbg/tree/master.svg?style=svg)](https://circleci.com/gh/swojtasiak/jsrdbg/tree/master)
 
 JavaScript Remote Debugger
 ==========================

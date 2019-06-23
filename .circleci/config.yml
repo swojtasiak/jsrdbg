@@ -1,0 +1,12 @@
+jobs:
+  build:
+    docker:
+      - image: ubuntu:18.04
+    steps:
+      - checkout
+      - run: |
+          apt-get update -qq
+          apt-get install build-essential autoconf libtool-bin libmozjs-24-dev libreadline-dev autoconf-archive -y
+          autoreconf -i
+          ./configure
+          make && make check
